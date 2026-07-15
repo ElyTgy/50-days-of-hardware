@@ -1,7 +1,9 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
+// Accept either name — Supabase's newer dashboards call it the "publishable" key.
+const anonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY ??
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY) as string | undefined;
 
 /** Null until VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY are set — the app
  *  renders fine without it, it just can't persist anything. */
