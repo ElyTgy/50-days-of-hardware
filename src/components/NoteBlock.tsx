@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase, uploadImage } from "../lib/supabase";
+import { useAuth } from "../lib/auth";
 import Markdown from "./Markdown";
 
 type Status = "idle" | "saving" | "saved" | "error";
@@ -16,6 +17,7 @@ export default function NoteBlock({
   day: number;
   section: string;
 }) {
+  const { canEdit } = useAuth();
   const [text, setText] = useState("");
   const [editing, setEditing] = useState(false);
   const [status, setStatus] = useState<Status>("idle");
@@ -123,6 +125,16 @@ export default function NoteBlock({
     if (saveTimer.current) clearTimeout(saveTimer.current);
     save(text);
   };
+
+  // Read-only viewers see the note rendered, or nothing if it's empty.
+  if (!canEdit) {
+    if (!text) return null;
+    return (
+      <div className="note note-rendered readonly">
+        <Markdown>{text}</Markdown>
+      </div>
+    );
+  }
 
   if (editing) {
     return (

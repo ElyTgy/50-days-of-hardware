@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../lib/auth";
 import type { Resource } from "../types";
 
 export default function ResourceList() {
+  const { canEdit } = useAuth();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [title, setTitle] = useState("");
@@ -53,30 +55,36 @@ export default function ResourceList() {
             {r.title}
           </a>
           <span className="resource-url">{r.url}</span>
-          <button className="row-delete" onClick={() => remove(r.id)} title="Delete">
-            ✕
-          </button>
+          {canEdit && (
+            <button className="row-delete" onClick={() => remove(r.id)} title="Delete">
+              ✕
+            </button>
+          )}
         </div>
       ))}
       {loaded && resources.length === 0 && (
-        <p className="empty-note">No links yet — add the first one.</p>
+        <p className="empty-note">
+          {canEdit ? "No links yet — add the first one." : "No links yet."}
+        </p>
       )}
-      <form className="resource-add" onSubmit={add}>
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Title (optional)"
-        />
-        <input
-          className="grow"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://…"
-        />
-        <button className="add-btn" style={{ marginTop: 0 }} type="submit">
-          + Add
-        </button>
-      </form>
+      {canEdit && (
+        <form className="resource-add" onSubmit={add}>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Title (optional)"
+          />
+          <input
+            className="grow"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://…"
+          />
+          <button className="add-btn" style={{ marginTop: 0 }} type="submit">
+            + Add
+          </button>
+        </form>
+      )}
     </div>
   );
 }

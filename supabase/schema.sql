@@ -2,8 +2,9 @@
 -- Paste this WHOLE file into the SQL editor, then Run (make sure nothing is
 -- highlighted, or it only runs the selection). Safe to run more than once.
 --
--- Single-user app with no auth: anon gets full access. The anon key + project
--- URL are the only gate, so don't share the deployed URL widely.
+-- Access model: anyone can READ; only the owner (you, signed in with Google)
+-- can WRITE. Editing is enforced here in the database, not just the UI.
+-- >>> Set your Google account email in is_owner() below. <<<
 
 -- ── Tables ────────────────────────────────────────────────────────────────
 
@@ -34,21 +35,40 @@ create table if not exists resources (
   created_at timestamptz not null default now()
 );
 
--- ── Row-level security: allow anon full access (no auth) ───────────────────
+-- ── Owner check ────────────────────────────────────────────────────────────
+-- The one email allowed to edit. CHANGE THIS to your Google account email.
+create or replace function public.is_owner() returns boolean
+language sql stable as $$
+  select coalesce(auth.jwt() ->> 'email', '') = 'cohenbv@gmail.com'
+$$;
+
+-- ── Row-level security: anyone reads, only the owner writes ────────────────
 
 alter table day_notes enable row level security;
 alter table shopping_items enable row level security;
 alter table resources enable row level security;
 
+-- Drop older policies (both the previous open ones and these, so re-runs work).
 drop policy if exists "anon all" on day_notes;
 drop policy if exists "anon all" on shopping_items;
 drop policy if exists "anon all" on resources;
 
-create policy "anon all" on day_notes for all using (true) with check (true);
-create policy "anon all" on shopping_items for all using (true) with check (true);
-create policy "anon all" on resources for all using (true) with check (true);
+do $$
+declare t text;
+begin
+  foreach t in array array['day_notes', 'shopping_items', 'resources'] loop
+    execute format('drop policy if exists "read" on %I', t);
+    execute format('drop policy if exists "owner insert" on %I', t);
+    execute format('drop policy if exists "owner update" on %I', t);
+    execute format('drop policy if exists "owner delete" on %I', t);
+    execute format('create policy "read" on %I for select using (true)', t);
+    execute format('create policy "owner insert" on %I for insert with check (public.is_owner())', t);
+    execute format('create policy "owner update" on %I for update using (public.is_owner()) with check (public.is_owner())', t);
+    execute format('create policy "owner delete" on %I for delete using (public.is_owner())', t);
+  end loop;
+end $$;
 
--- ── Storage: public bucket for pasted/dropped note images ──────────────────
+-- ── Storage: public read, owner-only upload ────────────────────────────────
 
 insert into storage.buckets (id, name, public)
 values ('images', 'images', true)
@@ -56,8 +76,10 @@ on conflict (id) do nothing;
 
 drop policy if exists "anon upload images" on storage.objects;
 drop policy if exists "anon read images" on storage.objects;
+drop policy if exists "read images" on storage.objects;
+drop policy if exists "owner upload images" on storage.objects;
 
-create policy "anon upload images" on storage.objects
-  for insert with check (bucket_id = 'images');
-create policy "anon read images" on storage.objects
+create policy "read images" on storage.objects
   for select using (bucket_id = 'images');
+create policy "owner upload images" on storage.objects
+  for insert with check (bucket_id = 'images' and public.is_owner());

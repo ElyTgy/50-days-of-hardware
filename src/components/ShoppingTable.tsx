@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../lib/auth";
 import type { ShoppingItem } from "../types";
 import { isTruthy, matchColumn, parseCsv } from "../lib/csv";
 import ShoppingRow from "./ShoppingRow";
@@ -16,6 +17,7 @@ const blankItem = (): NewItem => ({
 });
 
 export default function ShoppingTable() {
+  const { canEdit } = useAuth();
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [notice, setNotice] = useState("");
@@ -114,33 +116,39 @@ export default function ShoppingTable() {
       </table>
 
       {loaded && items.length === 0 && (
-        <p className="empty-note">No parts yet — add one or import a CSV.</p>
+        <p className="empty-note">
+          {canEdit ? "No parts yet — add one or import a CSV." : "No parts yet."}
+        </p>
       )}
 
-      <div className="shop-actions">
-        <button className="add-btn" onClick={addItem}>
-          + Add part
-        </button>
-        <button className="add-btn" onClick={() => fileRef.current?.click()}>
-          ↑ Import CSV
-        </button>
-        {notice && <span className="shop-notice">{notice}</span>}
-        <input
-          ref={fileRef}
-          type="file"
-          accept=".csv,text/csv"
-          hidden
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) importCsv(file);
-            e.target.value = "";
-          }}
-        />
-      </div>
-      <p className="shop-hint">
-        CSV columns: part name, what it does, days required for, related concept(s),
-        link, purchased. A header row is detected automatically.
-      </p>
+      {canEdit && (
+        <>
+          <div className="shop-actions">
+            <button className="add-btn" onClick={addItem}>
+              + Add part
+            </button>
+            <button className="add-btn" onClick={() => fileRef.current?.click()}>
+              ↑ Import CSV
+            </button>
+            {notice && <span className="shop-notice">{notice}</span>}
+            <input
+              ref={fileRef}
+              type="file"
+              accept=".csv,text/csv"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) importCsv(file);
+                e.target.value = "";
+              }}
+            />
+          </div>
+          <p className="shop-hint">
+            CSV columns: part name, what it does, days required for, related
+            concept(s), link, purchased. A header row is detected automatically.
+          </p>
+        </>
+      )}
     </div>
   );
 }

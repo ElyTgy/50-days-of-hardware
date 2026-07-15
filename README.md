@@ -1,8 +1,8 @@
 # 50 Days of Hardware
 
 Personal tracker for the 50-day hardware challenge (Mon Jul 20 → Mon Sep 7, 2026).
-Vite + React + TypeScript, Supabase for persistence, deployed on Vercel. No auth —
-single user.
+Vite + React + TypeScript, Supabase for persistence, deployed on Vercel. Anyone can
+read; only you (signed in with Google) can edit — enforced in the database.
 
 Light/dark theme toggle lives in the top-right; the choice is remembered.
 
@@ -31,10 +31,38 @@ can include equations, GIFs, and embedded animations/video.
 
 Without the env vars the app still runs — it just shows a banner and doesn't save.
 
+## Editing access (Google sign-in)
+
+Editing is locked to one Google account; everyone else can only read. The rule is
+enforced by Supabase row-level security, not just the UI, so the anon key in the
+page can't be used to write.
+
+1. **Set your email** in [`supabase/schema.sql`](supabase/schema.sql): change the
+   address inside `is_owner()` to your Google account email, then run the file in
+   the SQL editor (safe to re-run over the earlier version).
+2. **Create Google OAuth credentials**: in the
+   [Google Cloud Console](https://console.cloud.google.com) → APIs & Services →
+   Credentials → Create OAuth client ID → *Web application*. Under **Authorized
+   redirect URIs** add your Supabase callback:
+   `https://YOUR-PROJECT.supabase.co/auth/v1/callback`. Copy the client ID + secret.
+3. **Enable Google in Supabase**: Dashboard → Authentication → Providers → Google →
+   enable, paste the client ID + secret, save.
+4. **Set the app URLs**: Dashboard → Authentication → URL Configuration → set
+   **Site URL** and add to **Redirect URLs** both `http://localhost:5173` (dev) and
+   your Vercel URL (prod).
+5. *(Optional)* add `VITE_OWNER_EMAIL=you@gmail.com` to `.env.local` so a signed-in
+   non-owner doesn't even see edit controls.
+
+Then click **Sign in** in the app, authorize with Google, and the edit controls
+appear. Sign out and it's read-only again.
+
 ## Deploy to Vercel
 
-Push to GitHub, import the repo in Vercel (framework preset: Vite), and add the two
-environment variables. `vercel.json` handles the SPA routing rewrite.
+Push to GitHub, import the repo in Vercel (framework preset: Vite), and add the
+environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and optionally
+`VITE_OWNER_EMAIL`). `vercel.json` handles the SPA routing rewrite. After the first
+deploy, add the Vercel URL to Supabase's Redirect URLs (step 4 above) so Google
+sign-in works in production.
 
 ## Editing content
 

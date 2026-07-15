@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { isSupabaseConfigured } from "../lib/supabase";
+import AuthButton from "./AuthButton";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Layout() {
@@ -17,6 +18,7 @@ export default function Layout() {
             <NavLink to="/shopping">Shopping</NavLink>
             <NavLink to="/resources">Resources</NavLink>
           </nav>
+          <AuthButton />
           <ThemeToggle />
         </div>
       </header>

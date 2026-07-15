@@ -1,4 +1,5 @@
 import type { ShoppingItem } from "../types";
+import { useAuth } from "../lib/auth";
 
 interface Props {
   item: ShoppingItem;
@@ -14,6 +15,8 @@ const TEXT_FIELDS = [
 ] as const;
 
 export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
+  const { canEdit } = useAuth();
+
   return (
     <tr className={item.purchased ? "purchased" : ""}>
       <td style={{ textAlign: "center" }}>
@@ -21,6 +24,7 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
           type="checkbox"
           className="shop-check"
           checked={item.purchased}
+          disabled={!canEdit}
           onChange={(e) => onEdit(item.id, { purchased: e.target.checked })}
           aria-label="Purchased"
         />
@@ -30,9 +34,10 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
           <input
             className="cell-input"
             defaultValue={item[field]}
-            placeholder={placeholder}
+            placeholder={canEdit ? placeholder : ""}
+            readOnly={!canEdit}
             onBlur={(e) => {
-              if (e.target.value !== item[field]) {
+              if (canEdit && e.target.value !== item[field]) {
                 onEdit(item.id, { [field]: e.target.value });
               }
             }}
@@ -44,9 +49,10 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
           <input
             className="cell-input"
             defaultValue={item.link}
-            placeholder="https://…"
+            placeholder={canEdit ? "https://…" : ""}
+            readOnly={!canEdit}
             onBlur={(e) => {
-              if (e.target.value !== item.link) {
+              if (canEdit && e.target.value !== item.link) {
                 onEdit(item.id, { link: e.target.value });
               }
             }}
@@ -65,13 +71,15 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
         </div>
       </td>
       <td>
-        <button
-          className="row-delete"
-          onClick={() => onDelete(item.id)}
-          title="Delete row"
-        >
-          ✕
-        </button>
+        {canEdit && (
+          <button
+            className="row-delete"
+            onClick={() => onDelete(item.id)}
+            title="Delete row"
+          >
+            ✕
+          </button>
+        )}
       </td>
     </tr>
   );
