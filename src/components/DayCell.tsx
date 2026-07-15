@@ -8,12 +8,7 @@ export default function DayCell({ day }: { day: Day }) {
     <Link
       to={`/day/${day.day}`}
       className="day-cell"
-      style={
-        {
-          "--cell-tint": block.tint,
-          "--cell-accent": block.accent,
-        } as React.CSSProperties
-      }
+      style={{ "--cell-accent": block.accent } as React.CSSProperties}
     >
       <div className="day-cell-top">
         <span className="day-cell-num">{day.day}</span>

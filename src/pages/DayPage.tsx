@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import DaySection from "../components/DaySection";
-import NotesEditor from "../components/NotesEditor";
 import { blockById, dateForDay, formatDateLong } from "../data/blocks";
 import { dayByNumber, days } from "../data/days";
 
@@ -44,12 +43,7 @@ export default function DayPage() {
         <div className="day-head-meta">
           <span
             className="block-chip"
-            style={
-              {
-                "--chip-tint": block.tint,
-                "--chip-accent": block.accent,
-              } as React.CSSProperties
-            }
+            style={{ "--chip-accent": block.accent } as React.CSSProperties}
           >
             <span className="legend-swatch" />
             {block.name}
@@ -58,13 +52,11 @@ export default function DayPage() {
         </div>
       </header>
 
-      <DaySection title="Introduction & background" content={day.intro} />
-      <DaySection title="Activity" content={day.activity} />
-      <DaySection title="Question to answer" content={day.question} />
-      <DaySection title="X post" content={day.xPost} />
-      <DaySection title="Additional resources" content={day.resources} />
-
-      <NotesEditor day={day.day} />
+      <DaySection title="Introduction & background" section="intro" day={day.day} content={day.intro} />
+      <DaySection title="Activity" section="activity" day={day.day} content={day.activity} />
+      <DaySection title="Question to answer" section="question" day={day.day} content={day.question} />
+      <DaySection title="X post" section="xpost" day={day.day} content={day.xPost} />
+      <DaySection title="Additional resources" section="resources" day={day.day} content={day.resources} />
     </main>
   );
 }

@@ -4,13 +4,22 @@ Personal tracker for the 50-day hardware challenge (Mon Jul 20 → Mon Sep 7, 20
 Vite + React + TypeScript, Supabase for persistence, deployed on Vercel. No auth —
 single user.
 
+Light/dark theme toggle lives in the top-right; the choice is remembered.
+
 ## Pages
 
 - **Calendar** (`/`) — all 50 days colored by block, click a day for its detail page.
-- **Day** (`/day/:n`) — topic, the five content sections, and a markdown notes editor
-  (autosaves; paste or drag-drop images to upload them).
-- **Shopping** (`/shopping`) — editable parts table with purchased checkboxes.
+- **Day** (`/day/:n`) — five sections (intro, activity, question, X post, resources).
+  Each has fixed content (filled in `days.ts`) and, right below it, an inline notes
+  area: click the text to type, click away to render. Notes are markdown with LaTeX
+  (`$…$` / `$$…$$`) and images (paste or drag-drop); they autosave per section.
+- **Shopping** (`/shopping`) — editable parts table with purchased checkboxes, plus
+  **Import CSV** (columns: part name, what it does, days required for, related
+  concept(s), link, purchased — a header row is auto-detected).
 - **Resources** (`/resources`) — a list of links.
+
+All fixed and note content renders markdown + LaTeX + raw HTML, so `days.ts` content
+can include equations, GIFs, and embedded animations/video.
 
 ## Setup (~5 minutes)
 

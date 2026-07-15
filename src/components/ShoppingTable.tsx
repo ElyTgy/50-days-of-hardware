@@ -1,11 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import type { ShoppingItem } from "../types";
+import { isTruthy, matchColumn, parseCsv } from "../lib/csv";
 import ShoppingRow from "./ShoppingRow";
+
+type NewItem = Omit<ShoppingItem, "id" | "created_at">;
+
+const blankItem = (): NewItem => ({
+  part_name: "",
+  what_it_does: "",
+  days_required_for: "",
+  related_concepts: "",
+  link: "",
+  purchased: false,
+});
 
 export default function ShoppingTable() {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [notice, setNotice] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -22,26 +36,17 @@ export default function ShoppingTable() {
       });
   }, []);
 
-  const addItem = async () => {
-    const blank = {
-      part_name: "",
-      what_it_does: "",
-      days_required_for: "",
-      related_concepts: "",
-      link: "",
-      purchased: false,
-    };
+  const insertMany = async (rows: NewItem[]) => {
+    if (rows.length === 0) return;
     if (!supabase) {
-      setItems((xs) => [...xs, { id: crypto.randomUUID(), ...blank }]);
+      setItems((xs) => [...xs, ...rows.map((r) => ({ id: crypto.randomUUID(), ...r }))]);
       return;
     }
-    const { data } = await supabase
-      .from("shopping_items")
-      .insert(blank)
-      .select()
-      .single();
-    if (data) setItems((xs) => [...xs, data]);
+    const { data } = await supabase.from("shopping_items").insert(rows).select();
+    if (data) setItems((xs) => [...xs, ...data]);
   };
+
+  const addItem = () => insertMany([blankItem()]);
 
   const editItem = (id: string, patch: Partial<ShoppingItem>) => {
     setItems((xs) => xs.map((x) => (x.id === id ? { ...x, ...patch } : x)));
@@ -51,6 +56,35 @@ export default function ShoppingTable() {
   const deleteItem = (id: string) => {
     setItems((xs) => xs.filter((x) => x.id !== id));
     supabase?.from("shopping_items").delete().eq("id", id).then();
+  };
+
+  const importCsv = async (file: File) => {
+    const rows = parseCsv(await file.text());
+    if (rows.length === 0) {
+      setNotice("That file looked empty.");
+      return;
+    }
+    const header = rows[0].map(matchColumn);
+    const hasHeader = header.some(Boolean);
+    const dataRows = hasHeader ? rows.slice(1) : rows;
+    // Fall back to fixed column order when there's no recognizable header.
+    const cols = hasHeader
+      ? header
+      : ["part_name", "what_it_does", "days_required_for", "related_concepts", "link", "purchased"];
+
+    const parsed: NewItem[] = dataRows.map((cells) => {
+      const item = blankItem();
+      cols.forEach((col, i) => {
+        const value = (cells[i] ?? "").trim();
+        if (!col) return;
+        if (col === "purchased") item.purchased = isTruthy(value);
+        else (item as Record<string, unknown>)[col] = value;
+      });
+      return item;
+    });
+
+    await insertMany(parsed);
+    setNotice(`Imported ${parsed.length} ${parsed.length === 1 ? "part" : "parts"}.`);
   };
 
   return (
@@ -78,12 +112,35 @@ export default function ShoppingTable() {
           ))}
         </tbody>
       </table>
+
       {loaded && items.length === 0 && (
-        <p className="empty-note">No parts yet — add the first one.</p>
+        <p className="empty-note">No parts yet — add one or import a CSV.</p>
       )}
-      <button className="add-btn" onClick={addItem}>
-        + Add part
-      </button>
+
+      <div className="shop-actions">
+        <button className="add-btn" onClick={addItem}>
+          + Add part
+        </button>
+        <button className="add-btn" onClick={() => fileRef.current?.click()}>
+          ↑ Import CSV
+        </button>
+        {notice && <span className="shop-notice">{notice}</span>}
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".csv,text/csv"
+          hidden
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) importCsv(file);
+            e.target.value = "";
+          }}
+        />
+      </div>
+      <p className="shop-hint">
+        CSV columns: part name, what it does, days required for, related concept(s),
+        link, purchased. A header row is detected automatically.
+      </p>
     </div>
   );
 }

@@ -2,10 +2,9 @@ export interface Block {
   id: number;
   name: string;
   days: [number, number];
-  /** strong accent — text, borders, chips */
+  /** strong accent — text, borders, chips. Soft tints are derived from this
+   *  in CSS via color-mix, so they adapt to light/dark automatically. */
   accent: string;
-  /** soft tint — calendar cell background */
-  tint: string;
 }
 
 export interface Day {

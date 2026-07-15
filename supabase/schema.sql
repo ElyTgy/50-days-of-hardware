@@ -2,10 +2,15 @@
 -- Single-user app with no auth: anon gets full access. The anon key +
 -- project URL are the only gate, so don't share the deployed URL widely.
 
+-- One notes row per (day, section). Sections: intro, activity, question,
+-- xpost, resources. If you ran an earlier version with `day` as the sole
+-- primary key, run `drop table day_notes;` first, then this.
 create table if not exists day_notes (
-  day int primary key,
+  day int not null,
+  section text not null,
   content text not null default '',
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  primary key (day, section)
 );
 
 create table if not exists shopping_items (
