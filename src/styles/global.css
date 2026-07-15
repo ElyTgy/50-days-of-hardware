@@ -321,57 +321,40 @@ textarea {
 }
 
 .day-cell.is-dim {
-  opacity: 0.36;
-  filter: saturate(0.55);
+  opacity: 0.5;
 }
 
 .day-cell.is-highlight {
   z-index: 1;
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cell-accent) 45%, transparent),
-    0 10px 30px -10px color-mix(in srgb, var(--cell-accent) 70%, transparent);
-  animation: cell-glow 2.6s ease-in-out infinite;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cell-accent) 30%, transparent),
+    0 5px 18px -14px color-mix(in srgb, var(--cell-accent) 55%, transparent);
 }
 
-/* The shiny rotating border: a gradient rectangle masked to just the edge. */
+/* A soft accent border with a gentle sheen that drifts slowly around. */
 .day-cell.is-highlight::after {
   content: "";
   position: absolute;
-  inset: -2px;
-  border-radius: 12px;
-  padding: 2px;
+  inset: -1px;
+  border-radius: 11px;
+  padding: 1.5px;
   background: conic-gradient(
     from var(--spin),
-    color-mix(in srgb, var(--cell-accent) 15%, transparent) 0deg,
-    var(--cell-accent) 55deg,
-    #fff 80deg,
-    var(--cell-accent) 105deg,
-    color-mix(in srgb, var(--cell-accent) 15%, transparent) 160deg,
-    transparent 230deg,
-    transparent 360deg
+    color-mix(in srgb, var(--cell-accent) 50%, transparent),
+    var(--cell-accent) 120deg,
+    color-mix(in srgb, #fff 18%, var(--cell-accent)) 180deg,
+    var(--cell-accent) 240deg,
+    color-mix(in srgb, var(--cell-accent) 50%, transparent) 360deg
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  animation: cell-spin 3.5s linear infinite;
+  animation: cell-spin 7s linear infinite;
   pointer-events: none;
 }
 
 @keyframes cell-spin {
   to {
     --spin: 360deg;
-  }
-}
-
-@keyframes cell-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cell-accent) 40%, transparent),
-      0 8px 24px -12px color-mix(in srgb, var(--cell-accent) 65%, transparent);
-  }
-  50% {
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--cell-accent) 55%, transparent),
-      0 12px 36px -8px color-mix(in srgb, var(--cell-accent) 80%, transparent);
   }
 }
 
