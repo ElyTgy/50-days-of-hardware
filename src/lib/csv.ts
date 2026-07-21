@@ -1,3 +1,5 @@
+import type { ShoppingStatus } from "../types";
+
 /** Minimal CSV parser that handles quoted fields, escaped quotes ("") and
  *  commas/newlines inside quotes. Returns an array of rows (arrays of cells). */
 export function parseCsv(text: string): string[][] {
@@ -50,6 +52,7 @@ export function matchColumn(header: string): string | null {
   if (h.includes("whatitdoes") || h.includes("description") || h.includes("does") || h.includes("purpose")) return "what_it_does";
   if (h.includes("daysrequired") || h.includes("daysfor") || h === "days" || h === "day") return "days_required_for";
   if (h.includes("concept")) return "related_concepts";
+  if (h.includes("status")) return "status";
   if (h === "link" || h === "url" || h.includes("link")) return "link";
   if (h.includes("purchase") || h.includes("bought") || h.includes("owned")) return "purchased";
   return null;
@@ -57,3 +60,13 @@ export function matchColumn(header: string): string | null {
 
 export const isTruthy = (v: string): boolean =>
   ["1", "true", "yes", "y", "x", "✓", "done"].includes(v.trim().toLowerCase());
+
+/** Coerce a free-text status cell to one of the four allowed statuses. */
+export function normalizeStatus(v: string): ShoppingStatus {
+  const s = v.trim().toLowerCase();
+  if (s.includes("own") || s.includes("have") || isTruthy(s)) return "owned";
+  if (s.includes("deliver") || s.includes("shipping") || s.includes("transit") || s.includes("way"))
+    return "in delivery";
+  if (s.includes("pick") || s.includes("ready") || s.includes("collect")) return "waiting for pick up";
+  return "not ordered";
+}

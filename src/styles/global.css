@@ -737,6 +737,51 @@ textarea {
   cursor: pointer;
 }
 
+.status-select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 7px 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.status-select:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.status-select:disabled {
+  cursor: default;
+  opacity: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  border-color: transparent;
+  background: transparent;
+}
+
+/* Subtle status tints — a colored left edge, muted to match the notebook feel. */
+.status-select[data-status="not ordered"] {
+  color: var(--ink-faint);
+  border-left: 3px solid var(--line);
+}
+.status-select[data-status="waiting for pick up"] {
+  color: #9a6b1f;
+  border-left: 3px solid #d9a441;
+}
+.status-select[data-status="in delivery"] {
+  color: #3f6ea3;
+  border-left: 3px solid #6fa0cf;
+}
+.status-select[data-status="owned"] {
+  color: #3f7a4a;
+  border-left: 3px solid #6fae74;
+}
+
 .link-cell {
   display: flex;
   align-items: center;

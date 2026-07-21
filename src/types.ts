@@ -19,6 +19,19 @@ export interface Day {
   resources?: string;
 }
 
+export type ShoppingStatus =
+  | "not ordered"
+  | "waiting for pick up"
+  | "in delivery"
+  | "owned";
+
+export const SHOPPING_STATUSES: ShoppingStatus[] = [
+  "not ordered",
+  "waiting for pick up",
+  "in delivery",
+  "owned",
+];
+
 export interface ShoppingItem {
   id: string;
   part_name: string;
@@ -26,6 +39,7 @@ export interface ShoppingItem {
   days_required_for: string;
   related_concepts: string;
   link: string;
+  status: ShoppingStatus;
   purchased: boolean;
   created_at?: string;
 }

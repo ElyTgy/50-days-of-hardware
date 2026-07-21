@@ -24,9 +24,14 @@ create table if not exists shopping_items (
   days_required_for text not null default '',
   related_concepts text not null default '',
   link text not null default '',
+  status text not null default 'not ordered',
   purchased boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+-- Add the status column to tables created before it existed (safe on re-run).
+alter table shopping_items
+  add column if not exists status text not null default 'not ordered';
 
 create table if not exists resources (
   id uuid primary key default gen_random_uuid(),

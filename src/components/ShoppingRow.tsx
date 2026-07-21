@@ -1,4 +1,5 @@
-import type { ShoppingItem } from "../types";
+import type { ShoppingItem, ShoppingStatus } from "../types";
+import { SHOPPING_STATUSES } from "../types";
 import { useAuth } from "../lib/auth";
 
 interface Props {
@@ -17,8 +18,10 @@ const TEXT_FIELDS = [
 export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
   const { canEdit } = useAuth();
 
+  const done = item.purchased || item.status === "owned";
+
   return (
-    <tr className={item.purchased ? "purchased" : ""}>
+    <tr className={done ? "purchased" : ""}>
       <td style={{ textAlign: "center" }}>
         <input
           type="checkbox"
@@ -69,6 +72,24 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
             </a>
           )}
         </div>
+      </td>
+      <td>
+        <select
+          className="status-select"
+          data-status={item.status}
+          value={item.status}
+          disabled={!canEdit}
+          onChange={(e) =>
+            onEdit(item.id, { status: e.target.value as ShoppingStatus })
+          }
+          aria-label="Status"
+        >
+          {SHOPPING_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
       </td>
       <td>
         {canEdit && (
