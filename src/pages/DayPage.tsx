@@ -55,7 +55,6 @@ export default function DayPage() {
       <DaySection title="Introduction & background" section="intro" day={day.day} content={day.intro} />
       <DaySection title="Activity" section="activity" day={day.day} content={day.activity} />
       <DaySection title="Question to answer" section="question" day={day.day} content={day.question} />
-      <DaySection title="X post" section="xpost" day={day.day} content={day.xPost} />
       <DaySection title="Additional resources" section="resources" day={day.day} content={day.resources} />
     </main>
   );

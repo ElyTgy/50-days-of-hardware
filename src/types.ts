@@ -16,7 +16,6 @@ export interface Day {
   intro?: string;
   activity?: string;
   question?: string;
-  xPost?: string;
   resources?: string;
 }
 
