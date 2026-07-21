@@ -26,33 +26,42 @@ export default function ShoppingTable() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // No backend: show the seed list in-memory so the section isn't empty.
+    const seedInMemory = () =>
+      SHOPPING_SEED.map((r) => ({ id: crypto.randomUUID(), ...r }));
+
+    // No backend: just show the seed list in-memory.
     if (!supabase) {
-      setItems(SHOPPING_SEED.map((r) => ({ id: crypto.randomUUID(), ...r })));
+      setItems(seedInMemory());
       setLoaded(true);
       return;
     }
+
     supabase
       .from("shopping_items")
       .select("*")
       .order("created_at", { ascending: true })
-      .then(async ({ data }) => {
-        // First run against an empty table: seed it with the parts list. Only
-        // the owner can insert (RLS), so visitors just see whatever is there.
-        if (!data || data.length === 0) {
-          const seeded = SHOPPING_SEED.map((r, i) => ({
-            ...r,
-            created_at: new Date(Date.now() + i).toISOString(),
-          }));
-          const { data: inserted } = await supabase!
-            .from("shopping_items")
-            .insert(seeded)
-            .select();
-          setItems(inserted ?? []);
-        } else {
+      .then(async ({ data, error }) => {
+        // Existing rows win — show them as-is.
+        if (!error && data && data.length > 0) {
           setItems(data);
+          setLoaded(true);
+          return;
         }
+        // Empty table, missing table, or read error: never leave the page
+        // blank — show the seed immediately...
+        setItems(seedInMemory());
         setLoaded(true);
+        // ...then try to persist it (succeeds only for the signed-in owner
+        // with the status column present; a no-op otherwise).
+        const seeded = SHOPPING_SEED.map((r, i) => ({
+          ...r,
+          created_at: new Date(Date.now() + i).toISOString(),
+        }));
+        const { data: inserted } = await supabase!
+          .from("shopping_items")
+          .insert(seeded)
+          .select();
+        if (inserted && inserted.length > 0) setItems(inserted);
       });
   }, []);
 
