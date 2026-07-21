@@ -123,11 +123,11 @@ export default function ShoppingTable() {
         <thead>
           <tr>
             <th style={{ width: 36 }} aria-label="Purchased" />
-            <th style={{ width: "17%" }}>Part name</th>
-            <th style={{ width: "24%" }}>What it does</th>
-            <th style={{ width: "12%" }}>Days required for</th>
-            <th style={{ width: "18%" }}>Related concept(s)</th>
-            <th>Link</th>
+            <th style={{ width: "15%" }}>Part name</th>
+            <th style={{ width: "21%" }}>What it does</th>
+            <th style={{ width: "11%" }}>Days required for</th>
+            <th style={{ width: "15%" }}>Related concept(s)</th>
+            <th style={{ width: 180 }}>Link</th>
             <th style={{ width: 150 }}>Status</th>
             <th style={{ width: 36 }} aria-label="Delete" />
           </tr>

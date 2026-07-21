@@ -15,6 +15,21 @@ const TEXT_FIELDS = [
   ["related_concepts", "Concepts"],
 ] as const;
 
+/** First real URL in a cell that may hold notes or several links. */
+const firstUrl = (link: string): string => {
+  const m = link.match(/https?:\/\/[^\s;,]+/);
+  return m ? m[0] : link;
+};
+
+/** Short, readable label for a link — its hostname (e.g. "leeselectronic.com"). */
+const linkLabel = (link: string): string => {
+  try {
+    return new URL(firstUrl(link)).hostname.replace(/^www\./, "");
+  } catch {
+    return "link";
+  }
+};
+
 export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
   const { canEdit } = useAuth();
 
@@ -49,27 +64,33 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
       ))}
       <td>
         <div className="link-cell">
-          <input
-            className="cell-input"
-            defaultValue={item.link}
-            placeholder={canEdit ? "https://…" : ""}
-            readOnly={!canEdit}
-            onBlur={(e) => {
-              if (canEdit && e.target.value !== item.link) {
-                onEdit(item.id, { link: e.target.value });
-              }
-            }}
-          />
-          {item.link && (
+          {canEdit && (
+            <input
+              className="cell-input link-input"
+              defaultValue={item.link}
+              placeholder="https://…"
+              onBlur={(e) => {
+                if (e.target.value !== item.link) {
+                  onEdit(item.id, { link: e.target.value });
+                }
+              }}
+            />
+          )}
+          {item.link ? (
             <a
-              className="link-open"
-              href={item.link}
+              className="link-chip"
+              href={firstUrl(item.link)}
               target="_blank"
               rel="noreferrer"
-              title="Open link"
+              title={item.link}
             >
-              ↗
+              {linkLabel(item.link)}
+              <span className="link-arrow" aria-hidden="true">
+                ↗
+              </span>
             </a>
+          ) : (
+            !canEdit && <span className="link-empty">—</span>
           )}
         </div>
       </td>
