@@ -48,7 +48,7 @@ page can't be used to write.
 3. **Enable Google in Supabase**: Dashboard → Authentication → Providers → Google →
    enable, paste the client ID + secret, save.
 4. **Set the app URLs**: Dashboard → Authentication → URL Configuration → set
-   **Site URL** and add to **Redirect URLs** both `http://localhost:5173` (dev) and
+   **Site URL** and add to **Redirect URLs** both `http://localhost:3000` (dev) and
    your Vercel URL (prod).
 5. *(Optional)* add `VITE_OWNER_EMAIL=you@gmail.com` to `.env.local` so a signed-in
    non-owner doesn't even see edit controls.

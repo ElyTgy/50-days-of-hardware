@@ -39,7 +39,7 @@ create table if not exists resources (
 -- The one email allowed to edit. CHANGE THIS to your Google account email.
 create or replace function public.is_owner() returns boolean
 language sql stable as $$
-  select coalesce(auth.jwt() ->> 'email', '') = 'cohenbv@gmail.com'
+  select coalesce(auth.jwt() ->> 'email', '') = 'yeganehtagh13@gmail.com'
 $$;
 
 -- ── Row-level security: anyone reads, only the owner writes ────────────────
