@@ -130,6 +130,138 @@ from (values
 ) as v(position, block_id, topic, puzzle, intro, activity, question, resources)
 where not exists (select 1 from days);
 
+-- ── Bonus block seed: the Mixed-Signal Bridge (staged) ────────────────────
+-- Three extra days added 2026-07-21, inserted into the STAGING dock
+-- (position = null) so they can be dragged onto the calendar in the app.
+-- Guarded per-day by topic, so re-runs never duplicate them.
+
+insert into days (position, block_id, topic, puzzle, created_at, equipment, prerequisites, intro, equations, diagram, assembled, activity, question, resources)
+select null, 6, $bridge$Decoupling: the capacitor is not the point$bridge$, false, now() + interval '0 seconds', $bridge$- MCU dev board (STM32/Arduino) with several free GPIO pins
+- Oscilloscope (AC-coupled input)
+- 100 nF ceramic capacitors (at least 2)
+- ~10 cm of hookup wire
+- LTspice$bridge$, $bridge$- Day 5 (capacitor parasitics, ESR/ESL, self-resonant frequency)
+- Day 7 (frequency-dependent circuit behavior)
+- Day 28 (switch-node ringing — you've already seen fast edges misbehave)$bridge$, $bridge$**What's actually happening:** every time a digital gate switches, it has to charge or discharge a small load capacitance almost instantly. That means a burst of current — sometimes an amp or more — has to appear at the chip's power pin in a couple of nanoseconds. The board's main power supply (a wall adapter, a regulator, a big bulk capacitor an inch away) cannot respond that fast — not because it's a bad supply, but because any real wire or trace between it and the chip has inductance, and inductance opposes fast changes in current (that's the definition of $V = L \frac{di}{dt}$). If the current cannot come from far away in time, it has to be supplied locally — that's the entire reason decoupling capacitors exist. They're not filtering noise in the traditional sense; they're a local, fast-acting charge reservoir sitting as close as physically possible to the pin that's about to demand a sudden gulp of current.
+
+**The part almost everyone gets wrong at first:** it's easy to think "bigger capacitor = better decoupling." It's actually the opposite past a point — what matters most is the **loop inductance** of the capacitor's connection, not its capacitance value. A capacitor connected through even a few centimeters of wire has enough series inductance to make it nearly useless at the switching speeds a modern MCU produces. This is why datasheets insist on placing 100 nF caps directly at the power pin, and why "why is there a 100 nF cap right next to a 470 µF cap an inch away" is one of the most common power-integrity interview questions there is.
+
+The second half of this day is about **where the current actually goes on its way back.** Every circuit is a loop — current has to return to its source. On a board with a ground plane, high-frequency return current does not take the path of least resistance (which might wander anywhere); it takes the path of least **inductance**, which is almost always the area directly underneath the signal trace. This is the physical basis of "keep a solid, unbroken ground plane" — it's not a superstition, it's a direct consequence of Faraday's law wanting to minimize enclosed loop area.
+
+**Why this matters / where it's used:** every real PCB with a microcontroller, FPGA, or fast digital logic depends on getting this right — get it wrong and you get glitches, resets, EMI failures, and ADC noise you can't explain (this connects directly to the ADC day). It is also one of the most reliably asked "explain this from first principles" interview questions in any hardware role, because it separates people who've memorized "put a cap near the pin" from people who understand why.$bridge$, $bridge$Impedance of an inductor (why "a wire" isn't just a wire at high frequency):
+
+$$Z_L = j\omega L = j 2\pi f L$$
+
+Voltage droop from a fast current step through a real (non-ideal) capacitor connection:
+
+$$V_{droop} = L \frac{di}{dt}$$
+
+A capacitor's self-resonant frequency — above this, it behaves like an inductor, not a capacitor:
+
+$$f_{SRF} = \frac{1}{2\pi\sqrt{LC}}$$$bridge$, $bridge$No single canonical diagram beats building the mental picture yourself, but this article has a clear circuit model of the loop (bypass cap, parasitic inductance, IC) worth sketching by hand before you start: [Altium — Decoupling Capacitor and Bypass Placement Guidelines](https://resources.altium.com/p/bypass-and-decoupling-capacitor-placement-guidelines) (see the "circuit model" figure showing the loop between the bypass cap and the package's parasitic inductance).$bridge$, $bridge$An MCU deliberately abusing its own power rail as a controlled experiment, scoped three different ways, plus an LTspice model that isolates the loop-inductance variable so you can see the mechanism in isolation from the real (messier) hardware.$bridge$, $bridge$You're going to create the exact failure this day is about, then fix it, then break it again on purpose — so you see all three states with your own eyes.
+
+1. Write firmware that toggles 8 GPIO pins simultaneously as fast as the MCU allows (a tight loop is fine). This is your "aggressor" — a burst of current demand with no decoupling help.
+2. AC-couple your scope to the MCU's VDD pin and capture the ripple/droop with **no local capacitor** — only the board's distant bulk cap. Note the peak-to-peak disturbance.
+3. Add a 100 nF ceramic cap with the **shortest possible leads** directly at the VDD/GND pins. Recapture. You should see a visibly smaller disturbance.
+4. Now take that same 100 nF cap and reconnect it through **~10 cm of hookup wire** instead of short leads. Recapture — the disturbance should partially or fully return, with the same capacitor value.
+5. In LTspice, build a 1 A, 2 ns current step drawn from a 3.3 V source through 100 nF, once with 3 nH of series inductance and once with 30 nH. Plot the rail dip in both cases and compare against what you measured on the bench.$bridge$, $bridge$- Why did the identical 100 nF capacitor stop working once it was 10 cm away instead of right at the pin? Frame your answer entirely in terms of $V = L\frac{di}{dt}$ — what changed, and what didn't?
+- Where does return current for a fast edge actually flow on a board with a solid ground plane — directly underneath the trace, or by the shortest-resistance path to the ground pin? Why are those two answers different at high frequency?$bridge$, $bridge$**Check your understanding**
+
+- Why put a 100 nF cap at every pin when a 470 µF bulk capacitor already sits an inch away on the same rail? (Answer using loop inductance and self-resonant frequency, not "just because.")
+- What happens electrically when a fast digital signal's return current is forced to cross a slit or split in the ground plane beneath it?
+- Why pair a 100 nF cap with a 10 µF cap on the same rail, and what problem can two capacitors of different self-resonant frequencies create between them (hint: anti-resonance)?
+
+**Further reading**
+
+- [Altium — Decoupling Capacitor and Bypass Placement Guidelines](https://resources.altium.com/p/bypass-and-decoupling-capacitor-placement-guidelines) — the clearest short explanation of the loop-inductance model and why direct-to-plane connections beat traces
+- [NWES Blog — Remove Ground Bounce with Proper Bypass Capacitor Placement](https://www.nwengineeringllc.com/article/remove-ground-bounce-with-proper-bypass-capacitor-placement.php) — distinguishes decoupling caps (PDN ripple) from bypass caps (ground bounce), which most explanations blur together
+- [AllPCB — The Ultimate Guide to Power Plane Decoupling](https://www.allpcb.com/allelectrohub/the-ultimate-guide-to-power-plane-decoupling-capacitors-placement-and-strategies) — good on multi-value capacitor banks and why "two caps of half the value" beats "one cap of double the value"$bridge$
+where not exists (select 1 from days where topic = $bridge$Decoupling: the capacitor is not the point$bridge$);
+
+insert into days (position, block_id, topic, puzzle, created_at, equipment, prerequisites, intro, equations, diagram, assembled, activity, question, resources)
+select null, 6, $bridge$Mixed-signal SI: rise time, return paths, and one solid plane$bridge$, false, now() + interval '1 seconds', $bridge$- Paper and pencil
+- LTspice
+
+No physical hardware for this day — it's a design-reasoning day, meant to be done right after the decoupling day while the loop-inductance intuition is still fresh.$bridge$, $bridge$- Day 34 (transmission-line reflections, the λ/10 rule)
+- The decoupling day (loop inductance, return-current paths)$bridge$, $bridge$**What's actually going on:** everything you learned in the RF block about transmission lines and reflections is exactly the same physics that governs a digital trace on a PCB — the only difference is that instead of a sine wave at a fixed RF frequency, you have a digital **edge**, which is really a sum of many frequencies (a fast edge has significant energy content well above the clock frequency itself; a good rule of thumb is that the effective bandwidth of a digital edge is roughly $BW \approx \frac{0.35}{t_r}$). This is why a "slow" 100 MHz digital system can still have serious transmission-line problems: it's not the clock frequency that matters, it's the edge speed.
+
+The practical question every layout designer has to answer is: **at what point does a trace stop being "just a wire"** and start being a transmission line that needs real termination and impedance control? The answer is the same "critical length" concept from Day 34, just reframed for digital rise times instead of RF wavelengths.
+
+The second core idea of this day is **return-current routing**, which you already derived the mechanism for on the decoupling day: current takes the path of least inductance, which is the area directly beneath the signal trace, provided there's an unbroken reference plane there. Mixed-signal boards (a board with both an ADC and a switching regulator and a digital MCU on it) live or die on this idea. The classic — and classically bad — instinct is to physically cut the ground plane in two, one side "analog ground," one side "digital ground," to keep them from talking to each other. This nearly always backfires: any signal whose return current needs to cross that gap is forced to detour around it, creating a large loop — which is to say, you've just built an accidental antenna into your own board. The better and now-standard approach is **one solid plane, partitioned by careful component placement** instead of a physical cut.
+
+**Where this matters:** this is the actual foundation of high-speed and mixed-signal PCB layout — the entire discipline is "control rise-time-driven trace behavior, and control where return current flows." Everything else (stack-up choices, via placement, crosstalk mitigation) is an application of these two ideas.$bridge$, $bridge$Signal propagation speed in FR-4 (a common approximation):
+
+$$v \approx 15\ \text{cm/ns}$$
+
+Critical length — the trace length beyond which transmission-line behavior (not simple lumped-element behavior) matters:
+
+$$\ell_{critical} \approx \frac{t_r \times v}{6}$$
+
+Effective bandwidth of a digital edge, given its 10–90% rise time $t_r$:
+
+$$BW \approx \frac{0.35}{t_r}$$
+
+Aperture jitter's fundamental limit on achievable SNR for any ADC sampling a signal at frequency $f_{in}$ with clock jitter $t_j$ (this bridges directly into the ADC day):
+
+$$SNR_{jitter} \le -20\log_{10}\left(2\pi f_{in} t_j\right)$$$bridge$, $bridge$[Dr. Eric Bogatin — "The Critical Length of a Transmission Line"](https://www.polarinstruments.com/support/cits/Critical_length.pdf) — a short, clean derivation of the exact rule you'll use in step 1, from one of the most cited names in practical signal integrity.
+
+[ProtoExpress — How to Handle Current Return Path for Better Signal Integrity](https://www.protoexpress.com/blog/current-return-path-signal-integrity/) — includes a labeled diagram of return current flowing through a via and back along the underside of a trace, which is the exact picture you're meant to sketch in step 3.$bridge$, $bridge$A source-terminated transmission line in LTspice (so you can see a reflection get killed rather than just being told it will be), plus a hand-drawn 2-layer mixed-signal floorplan where you physically trace out return-current paths for two different signal types.$bridge$, $bridge$1. Using the critical-length equation, compute the critical length for rise times of 10 ns, 2 ns, and 0.5 ns. Compare each result against the λ/10 rule you used in Day 34 for RF — you should find they're expressing the same underlying idea in two different domains.
+2. In LTspice, rebuild Day 34's mismatched transmission line (long line, 1 MΩ load — a strong reflection). Now add a 33 Ω resistor in series **at the source end only** (the load stays mismatched). Plot the output before and after adding the source resistor.
+3. Sketch a simple 2-layer board layout containing an ADC, an MCU, and a switching regulator, with one continuous ground plane underneath everything. Mark rough component placement. Then, in a different color, draw the actual return-current path for (a) the MCU's digital bus traffic and (b) the ADC's analog input signal. Note whether these two paths overlap anywhere.
+4. Redraw the same board with the ground plane **cut** between the "analog" and "digital" sections, and re-trace the same two return paths. Compare the loop areas between your two sketches.$bridge$, $bridge$- Why does adding a resistor at the **source** end kill the reflection, even though the far end of the line is still just as mismatched as before? (Hint: think about what happens to the reflected wave when it travels back and arrives at the source.)
+- Why is "cut the ground plane between analog and digital" usually a worse idea than "keep one solid plane, and partition by placement instead"? Use your two sketches from steps 3–4 to make the argument concrete.$bridge$, $bridge$**Check your understanding**
+
+- Where should AGND and DGND actually tie together on a board with an ADC — and why at that specific point?
+- Why does the "3W rule" (space between two traces should be at least 3× the trace width) reduce crosstalk, and which of two adjacent traces is the "victim" if one of them is a clock line?
+- For a 1 MHz input signal sampled with 100 ps of clock jitter, what's the aperture-jitter SNR ceiling — and what does that number tell you about how many effective bits any ADC could give you on this signal, regardless of its advertised resolution?
+
+**Further reading**
+
+- [Altium (Phil's Lab) — High-Speed PCB Design Tips and Guidelines](https://resources.altium.com/p/high-speed-pcb-design-tips) — good concrete numeric examples of edge bandwidth and critical length
+- [AtlasPCB — Signal Integrity in PCB Design](https://atlaspcb.com/blog/signal-integrity-pcb-design-guide/) — walks the same critical-length math with worked numeric examples
+- [Sierra Circuits — Design for Better Signal Integrity, an interview with Rick Hartley](https://www.protoexpress.com/blog/rick-hartley-pcb-design-recommendations-to-minimize-emi/) — Rick Hartley is the person most cited on this topic; a fast way to absorb his framing of "every trace is a waveguide"
+- Samtec's freely available [Signal Integrity Handbook](https://suddendocs.samtec.com/notesandwhitepapers/samtec-signal-integrity-handbook.pdf) is the closest thing to a full textbook on this if you want to go deep later$bridge$
+where not exists (select 1 from days where topic = $bridge$Mixed-signal SI: rise time, return paths, and one solid plane$bridge$);
+
+insert into days (position, block_id, topic, puzzle, created_at, equipment, prerequisites, intro, equations, diagram, assembled, activity, question, resources)
+select null, 6, $bridge$ADC: aliasing you can see$bridge$, false, now() + interval '2 seconds', $bridge$- STM32 (or similar MCU) with an onboard ADC and UART
+- Signal source: ideally a function generator, or MCU PWM run through Day 8's RC low-pass filter as a substitute
+- Laptop with Python (matplotlib) for plotting streamed samples$bridge$, $bridge$- Day 8 (RC low-pass filter — reused here as your signal source if you don't have a function generator)
+- The mixed-signal SI day (aperture jitter — gives you the context for why this day's noise-floor question matters)
+
+This day directly sets up the DMA day (DMA-streamed ADC sampling), which is much more about *why the numbers mean what they mean* if you've done this day first.$bridge$, $bridge$**What is an ADC, actually?** An analog-to-digital converter takes a continuously-varying voltage and produces a sequence of discrete numbers, each representing the voltage at one specific instant in time. Two separate, independent limitations are baked into that sentence, and almost all ADC interview questions are really asking about one or the other:
+
+1. **Sampling in time** — you only get to know the signal's value at specific instants, not continuously. This raises the question: how often do you need to sample to actually capture what the signal is doing? The answer is the Nyquist theorem: you must sample at least twice as fast as the highest frequency component present in the signal, or that frequency will be misrepresented as a different, lower frequency in your digital output — a phenomenon called **aliasing**. This isn't a measurement error you can fix after the fact; the information is genuinely destroyed at the moment of sampling. This is why every real ADC system needs an **anti-aliasing filter** — an analog low-pass filter placed before the ADC that guarantees nothing above half the sample rate ever reaches the sampler in the first place.
+
+2. **Quantization in amplitude** — even at a single instant, the ADC can only report one of a finite number of discrete voltage levels (determined by its bit resolution), not the true continuous value. This introduces quantization error, and combined with real-world noise, it means an ADC's *effective* number of bits is often lower than its advertised resolution.
+
+**Why this matters, and where it shows up:** literally any system that measures a real-world signal digitally — sensors, audio, communications, your own multimeter — runs into both of these limits. In interviews, the two most common traps are (a) asking you to identify what frequency an under-sampled signal will alias to, and (b) asking you to compute one LSB in real-world units for a given resolution and reference voltage. Both are direct, mechanical applications of the ideas above — which is exactly why this day is built around watching both effects happen live on your own hardware rather than just reading the definitions.$bridge$, $bridge$The aliased (observed) frequency when sampling below Nyquist, where $n$ is the nearest integer:
+
+$$f_{observed} = |f_{in} - n \cdot f_s|$$
+
+One LSB (the smallest voltage step an ADC can resolve), for an $N$-bit ADC with reference voltage $V_{ref}$:
+
+$$V_{LSB} = \frac{V_{ref}}{2^N}$$
+
+Effective number of bits, given the standard deviation $\sigma$ of your noise floor measured in LSBs (a commonly used approximate form):
+
+$$ENOB \approx N - \log_2(\sigma)$$$bridge$, $bridge$[Analog Devices Wiki — Chapter 20: Analog to Digital Conversion](https://wiki.analog.com/university/courses/electronics/text/chapter-20) — a free, textbook-quality chapter with clear figures on sampling, quantization error, and SAR ADC architecture; this is the single best "read this before you start" resource for the whole day.$bridge$, $bridge$A live sampling rig that streams your MCU's ADC readings over UART to your laptop for plotting in real time — first used to watch aliasing happen on command, then repurposed to measure your ADC's actual noise floor.$bridge$, $bridge$1. Configure your MCU's ADC to sample at exactly 10 kSa/s, streaming raw values over UART to a simple Python script that plots them as they arrive.
+2. Feed in a roughly 1 kHz sine wave (filtered PWM through Day 8's RC filter works fine, or a function generator if you have one) and capture a clean, correctly-reconstructed waveform.
+3. Now feed in 9 kHz, then 11 kHz, then 19 kHz — **before you look at each plot, write down what frequency you expect to see**, based on the aliasing equation. Then capture and compare against your prediction.
+4. Ground the ADC input directly (0 V, no signal), capture 10,000 samples, and plot a histogram of the raw values. This is your ADC's actual noise floor, independent of anything you're trying to measure.$bridge$, $bridge$- Why does a 9 kHz input come out looking like a 1 kHz signal at a 10 kHz sample rate? Derive this yourself from the folding/aliasing equation rather than just quoting it — walk through why $n=1$ gives you exactly 1 kHz.
+- What must an anti-aliasing filter guarantee about every frequency component above $f_s/2$ for this failure mode to be prevented entirely?
+- For a 12-bit ADC with a 3.3 V reference: what is one LSB in millivolts? Using the standard deviation (in LSBs) from your grounded-input histogram, how many effective bits is your ADC actually delivering, versus its advertised 12?$bridge$, $bridge$**Check your understanding**
+
+- In one line each: how do SAR, sigma-delta, and flash ADC architectures trade off speed, resolution, and latency against each other?
+- A sensor picks up 60 Hz mains interference and is sampled at 50 Sa/s. At what frequency does that interference actually appear in your digital output — and why can no digital filter applied afterward remove it? (The answer connects directly back to "the information is destroyed at the sampler.")
+
+**Further reading**
+
+- [Analog Devices — Sigma-Delta ADCs Tutorial](https://www.analog.com/en/resources/technical-articles/sigmadelta-adcs-tutorial.html) — the clearest available explanation of oversampling and noise shaping, for when you want to go beyond the one-line SAR-vs-sigma-delta comparison
+- [TI Precision Labs — SAR & Delta-Sigma ADCs: Understanding Basic Operation](https://www.ti.com/content/dam/videos/external-videos/en-us/7/3816841626001/6228191712001.mp4/subassets/adcs-sar-delta-sigma-basic-operation-presentation.pdf) — TI's own training deck comparing the two architectures side by side
+- [ODG — SAR vs Delta-Sigma ADC: What's the Real Difference](https://www.origin-ic.com/blog/sar-vs-delta-sigma-analog-signal-to-digital-conversion/48376) — a shorter, more practical comparison if the ADI tutorial is more depth than you need right now$bridge$
+where not exists (select 1 from days where topic = $bridge$ADC: aliasing you can see$bridge$);
+
 -- ── Migrate old day_notes (keyed by day number) to day_id ─────────────────
 -- Older installs created day_notes with a (day int, section) key. Re-key by
 -- the seeded day ids — seed positions equal the old day numbers, so the join

@@ -26,6 +26,7 @@ export default function CalendarGrid({ active }: { active: number | null }) {
   const gridRef = useRef<HTMLDivElement>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null); // day id | "end" | "dock"
+  const [dockOpen, setDockOpen] = useState(false);
 
   const trailing = (7 - (scheduled.length % 7)) % 7;
 
@@ -123,9 +124,14 @@ export default function CalendarGrid({ active }: { active: number | null }) {
         ))}
       </div>
 
+      {/* Staging drawer: slides in from the right, toggled by its handle.
+          Always mounted in edit mode and moved only with transform, so a
+          dragstart never causes a layout shift (Chromium cancels drags whose
+          source moves). The handle is itself a drop target, so a day can be
+          staged even while the drawer is closed. */}
       {editing && (
-        <div
-          className={`dock${overId === "dock" ? " drop-hover" : ""}`}
+        <aside
+          className={`dock-panel${dockOpen ? " open" : ""}${overId === "dock" ? " drop-hover" : ""}`}
           onDragOver={(e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = "move";
@@ -135,50 +141,65 @@ export default function CalendarGrid({ active }: { active: number | null }) {
           onDrop={(e) => {
             e.preventDefault();
             const src = droppedDayId(e);
-            if (src) stageDay(src);
+            if (src) {
+              stageDay(src);
+              setDockOpen(true);
+            }
             endDrag();
           }}
         >
-          <p className="dock-label">Staging — not scheduled</p>
-          {staged.length === 0 ? (
-            <p className="dock-hint">
-              Drag a day here to unschedule it, or press + to draft a new one.
-            </p>
-          ) : (
-            <div className="dock-cards">
-              {staged.map((d) => {
-                const block = blockById(d.blockId);
-                return (
-                  <div
-                    key={d.id}
-                    className={`dock-card${draggingId === d.id ? " dragging" : ""}`}
-                    style={{ "--cell-accent": block.accent } as React.CSSProperties}
-                    role="link"
-                    tabIndex={0}
-                    draggable
-                    onDragStart={(e) => {
-                      // setData is required for the drag to start in
-                      // Safari/Firefox, and carries the id to the drop.
-                      e.dataTransfer.setData("text/plain", d.id);
-                      e.dataTransfer.effectAllowed = "move";
-                      setDraggingId(d.id);
-                    }}
-                    onDragEnd={endDrag}
-                    onClick={() => {
-                      if (draggingId !== d.id) navigate(`/day/draft/${d.id}`);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") navigate(`/day/draft/${d.id}`);
-                    }}
-                  >
-                    {d.puzzle && "🧩 "}
-                    {d.topic || "Untitled"}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+          <button
+            type="button"
+            className="dock-handle"
+            aria-expanded={dockOpen}
+            title={dockOpen ? "Hide staging" : "Show staging"}
+            onClick={() => setDockOpen((o) => !o)}
+          >
+            staging · {staged.length}
+          </button>
+          <div className="dock-body">
+            <p className="dock-label">Staging — not scheduled</p>
+            {staged.length === 0 ? (
+              <p className="dock-hint">
+                Drag a day here to unschedule it, or press + to draft a new
+                one.
+              </p>
+            ) : (
+              <div className="dock-cards">
+                {staged.map((d) => {
+                  const block = blockById(d.blockId);
+                  return (
+                    <div
+                      key={d.id}
+                      className={`dock-card${draggingId === d.id ? " dragging" : ""}`}
+                      style={{ "--cell-accent": block.accent } as React.CSSProperties}
+                      role="link"
+                      tabIndex={0}
+                      draggable
+                      onDragStart={(e) => {
+                        // setData is required for the drag to start in
+                        // Safari/Firefox, and carries the id to the drop.
+                        e.dataTransfer.setData("text/plain", d.id);
+                        e.dataTransfer.effectAllowed = "move";
+                        setDraggingId(d.id);
+                      }}
+                      onDragEnd={endDrag}
+                      onClick={() => {
+                        if (draggingId !== d.id) navigate(`/day/draft/${d.id}`);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") navigate(`/day/draft/${d.id}`);
+                      }}
+                    >
+                      {d.puzzle && "🧩 "}
+                      {d.topic || "Untitled"}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </aside>
       )}
     </div>
   );
