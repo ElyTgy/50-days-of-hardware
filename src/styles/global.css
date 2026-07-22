@@ -1038,11 +1038,7 @@ textarea {
   color: var(--ink-faint);
   border-left: 3px solid var(--line);
 }
-.status-select[data-status="waiting for pick up"] {
-  color: #9a6b1f;
-  border-left: 3px solid #d9a441;
-}
-.status-select[data-status="in delivery"] {
+.status-select[data-status="ordered"] {
   color: #3f6ea3;
   border-left: 3px solid #6fa0cf;
 }

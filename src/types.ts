@@ -63,16 +63,11 @@ export interface SeedDay {
   resources?: string;
 }
 
-export type ShoppingStatus =
-  | "not ordered"
-  | "waiting for pick up"
-  | "in delivery"
-  | "owned";
+export type ShoppingStatus = "not ordered" | "ordered" | "owned";
 
 export const SHOPPING_STATUSES: ShoppingStatus[] = [
   "not ordered",
-  "waiting for pick up",
-  "in delivery",
+  "ordered",
   "owned",
 ];
 

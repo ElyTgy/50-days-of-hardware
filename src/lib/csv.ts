@@ -61,12 +61,20 @@ export function matchColumn(header: string): string | null {
 export const isTruthy = (v: string): boolean =>
   ["1", "true", "yes", "y", "x", "✓", "done"].includes(v.trim().toLowerCase());
 
-/** Coerce a free-text status cell to one of the four allowed statuses. */
+/** Coerce a free-text status cell to one of the three allowed statuses. */
 export function normalizeStatus(v: string): ShoppingStatus {
   const s = v.trim().toLowerCase();
   if (s.includes("own") || s.includes("have") || isTruthy(s)) return "owned";
-  if (s.includes("deliver") || s.includes("shipping") || s.includes("transit") || s.includes("way"))
-    return "in delivery";
-  if (s.includes("pick") || s.includes("ready") || s.includes("collect")) return "waiting for pick up";
+  if (
+    s.includes("order") ||
+    s.includes("deliver") ||
+    s.includes("shipping") ||
+    s.includes("transit") ||
+    s.includes("way") ||
+    s.includes("pick") ||
+    s.includes("ready") ||
+    s.includes("collect")
+  )
+    return "ordered";
   return "not ordered";
 }
