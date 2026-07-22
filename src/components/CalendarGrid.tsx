@@ -1,14 +1,19 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { blockById } from "../data/blocks";
+import { blockById, CHALLENGE_START } from "../data/blocks";
 import { useDays } from "../lib/days";
 import DayCell from "./DayCell";
 
-const WEEKDAYS = ["Tue", "Wed", "Thu", "Fri", "Sat", "Sun", "Mon"];
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+// Monday-indexed weekday of day 1 (Mon=0 ... Sun=6), so the grid can lead
+// with blocked-out cells for the weekdays before the challenge starts.
+const LEADING_BLOCKED = (CHALLENGE_START.getDay() + 6) % 7;
 
 /**
  * The calendar grid plus, in edit mode, drag-drop reordering and the staging
- * dock. Day 1 is Tue Jul 21, 2026, so the weekday header starts on Tuesday.
+ * dock. Day 1 is Wed Jul 22, 2026, so the weekday header starts on Monday
+ * and the Mon/Tue cells before it are blocked out.
  * `active` is the spotlighted block id, or null.
  *
  * DnD robustness:
@@ -28,7 +33,7 @@ export default function CalendarGrid({ active }: { active: number | null }) {
   const [overId, setOverId] = useState<string | null>(null); // day id | "end" | "dock"
   const [dockOpen, setDockOpen] = useState(false);
 
-  const trailing = (7 - (scheduled.length % 7)) % 7;
+  const trailing = (7 - ((LEADING_BLOCKED + scheduled.length) % 7)) % 7;
 
   /** The dragged day's id from the drop event, with state fallback. Returns
    *  null for foreign payloads (e.g. a URL dragged in from elsewhere). */
@@ -107,6 +112,10 @@ export default function CalendarGrid({ active }: { active: number | null }) {
             : undefined
         }
       >
+        {Array.from({ length: LEADING_BLOCKED }, (_, i) => (
+          <div key={`lead-${i}`} className="cal-empty" />
+        ))}
+
         {scheduled.map((d) => (
           <DayCell key={d.id} day={d} active={active} {...dragProps(d.id)} />
         ))}
