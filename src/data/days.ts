@@ -1,19 +1,17 @@
-import type { Day } from "../types";
+import type { SeedDay } from "../types";
 
 /**
- * The 50 days. Dates are computed from the day number (day 1 = Mon Jul 20, 2026),
- * so only the day number, block, and topic live here.
+ * SEED DATA — the original 50 days from the v3 challenge document.
  *
- * To fill in a day's content, add any of these keys with a markdown string:
- *   intro      — introduction and background you need
- *   activity   — activity to do        (the challenge's "Start:")
- *   question   — question to answer     (the challenge's "Answer this:")
- *   resources  — additional resources   (the challenge's "Check:")
+ * Since the in-app day editor landed, the live schedule is stored in the
+ * Supabase `days` table (see supabase/schema.sql, which seeds it from this
+ * list). This file remains only as the in-memory fallback when Supabase is
+ * unreachable/unconfigured, and as the source the SQL seed was generated
+ * from. Do not edit content here — edit it in the app.
  *
- * intro is intentionally left empty: the source has no per-day intro.
  * Source: ~/Downloads/50-day-hardware-challenge-v3.md
  */
-export const days: Day[] = [
+export const days: SeedDay[] = [
   // Block 0 — Capacitive touch kickstart
   {
     day: 1,
@@ -441,4 +439,3 @@ export const days: Day[] = [
   },
 ];
 
-export const dayByNumber = (n: number): Day | undefined => days.find((d) => d.day === n);

@@ -681,6 +681,220 @@ textarea {
   min-height: 14px;
 }
 
+/* ---------- edit mode: toggle, FAB, drag & drop, staging dock ---------- */
+
+.edit-toggle {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: var(--ink-faint);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.edit-toggle:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.edit-toggle.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.fab {
+  position: fixed;
+  right: 28px;
+  bottom: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 24px;
+  line-height: 1;
+  box-shadow: 0 4px 18px rgb(0 0 0 / 12%);
+  transition: border-color 0.15s, color 0.15s, transform 0.1s;
+  z-index: 20;
+}
+
+.fab:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  transform: scale(1.05);
+}
+
+/* Wrapper that owns drag & drop for a cell (divs accept drops reliably;
+ * anchors don't in Safari). It is the grid item; the link fills it. */
+.day-cell-slot {
+  display: grid;
+}
+
+.day-cell-slot > .day-cell {
+  height: 100%;
+}
+
+.day-cell.dragging,
+.dock-card.dragging {
+  opacity: 0.35;
+}
+
+.day-cell.drop-target {
+  position: relative;
+}
+
+.day-cell.drop-target::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--cell-accent);
+}
+
+.cal-dropend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  min-height: 72px;
+}
+
+.cal-dropend.drop-hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.dock {
+  margin-top: 26px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  transition: border-color 0.15s;
+}
+
+.dock.drop-hover {
+  border-color: var(--ink);
+}
+
+.dock-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+.dock-hint {
+  font-size: 13.5px;
+  color: var(--ink-faint);
+}
+
+.dock-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dock-card {
+  display: inline-block;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--cell-accent);
+  border-radius: 10px;
+  background: var(--card);
+  padding: 9px 14px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  text-decoration: none;
+  cursor: grab;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.dock-card:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.day-topic-input {
+  width: 100%;
+  border: none;
+  border-bottom: 1px dashed var(--line);
+  background: transparent;
+  font-family: var(--serif);
+  font-size: 34px;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 10px 0 12px;
+  padding: 0 0 4px;
+}
+
+.day-topic-input:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+}
+
+.day-head-num.draft {
+  font-size: 44px;
+  color: var(--ink-faint);
+}
+
+.chip-select {
+  border: 1px solid var(--line);
+  background: var(--card);
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.chip-select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.puzzle-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+
+.puzzle-toggle input {
+  accent-color: var(--ink);
+}
+
+.day-admin {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.add-btn.danger:hover {
+  border-color: #a0453e;
+  color: #a0453e;
+}
+
 /* ---------- shopping table ---------- */
 
 /* Scroll horizontally on narrow screens instead of clipping columns. */

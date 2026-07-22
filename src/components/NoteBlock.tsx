@@ -8,13 +8,14 @@ type Status = "idle" | "saving" | "saved" | "error";
 /**
  * Inline notes for one section of a day — Notion-style: click the text to
  * edit, click away to render. No visible box. Content is markdown + LaTeX +
- * images (paste or drop). Autosaves to day_notes, keyed by (day, section).
+ * images (paste or drop). Autosaves to day_notes, keyed by (day_id, section)
+ * so notes stay attached to their day when the calendar is reordered.
  */
 export default function NoteBlock({
-  day,
+  dayId,
   section,
 }: {
-  day: number;
+  dayId: string;
   section: string;
 }) {
   const { canEdit } = useAuth();
@@ -31,7 +32,7 @@ export default function NoteBlock({
     supabase
       .from("day_notes")
       .select("content")
-      .eq("day", day)
+      .eq("day_id", dayId)
       .eq("section", section)
       .maybeSingle()
       .then(({ data }) => {
@@ -41,7 +42,7 @@ export default function NoteBlock({
       cancelled = true;
       if (saveTimer.current) clearTimeout(saveTimer.current);
     };
-  }, [day, section]);
+  }, [dayId, section]);
 
   const grow = useCallback(() => {
     const el = textareaRef.current;
@@ -64,12 +65,12 @@ export default function NoteBlock({
       const { error } = await supabase
         .from("day_notes")
         .upsert(
-          { day, section, content, updated_at: new Date().toISOString() },
-          { onConflict: "day,section" },
+          { day_id: dayId, section, content, updated_at: new Date().toISOString() },
+          { onConflict: "day_id,section" },
         );
       setStatus(error ? "error" : "saved");
     },
-    [day, section],
+    [dayId, section],
   );
 
   const scheduleSave = (content: string, delay = 700) => {
@@ -108,7 +109,7 @@ export default function NoteBlock({
       const placeholder = "\n![uploading…]()\n";
       insertAtCursor(placeholder);
       try {
-        const url = await uploadImage(file, `day-${day}/${section}`);
+        const url = await uploadImage(file, `day-${dayId}/${section}`);
         setText((t) => {
           const next = t.replace(placeholder, `\n![](${url})\n`);
           scheduleSave(next, 300);
