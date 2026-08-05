@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/generate-llm-files.mjs",
     "build": "tsc -b && vite build",
+    "generate-llm-files": "node scripts/generate-llm-files.mjs",
     "lint": "oxlint",
     "preview": "vite preview"
   },
