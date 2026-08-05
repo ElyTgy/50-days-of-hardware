@@ -12,8 +12,8 @@ const LEADING_BLOCKED = (CHALLENGE_START.getDay() + 6) % 7;
 
 /**
  * The calendar grid plus, in edit mode, drag-drop reordering and the staging
- * dock. Day 1 is Wed Jul 22, 2026, so the weekday header starts on Monday
- * and the Mon/Tue cells before it are blocked out.
+ * dock. The weekday header starts on Monday, so any weekdays before day 1's
+ * (CHALLENGE_START, in ../data/blocks) are blocked out as leading blanks.
  * `active` is the spotlighted block id, or null.
  *
  * DnD robustness:

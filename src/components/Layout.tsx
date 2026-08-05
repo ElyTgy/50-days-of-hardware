@@ -13,7 +13,7 @@ export default function Layout() {
     <div className="shell">
       <header className="topbar">
         <NavLink to="/" className="topbar-title">
-          50 Days of <em>Hardware</em>
+          40 Days of <em>Hardware</em>
         </NavLink>
         <div className="topbar-right">
           <nav className="topbar-nav">

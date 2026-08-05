@@ -1,6 +1,6 @@
-# 50 Days of Hardware
+# 40 Days of Hardware
 
-Personal tracker for the 50-day hardware challenge (Mon Jul 20 → Mon Sep 7, 2026).
+Personal tracker for the 40-day hardware challenge (Wed Aug 5 → Sun Sep 13, 2026).
 Vite + React + TypeScript, Supabase for persistence, deployed on Vercel. Anyone can
 read; only you (signed in with Google) can edit — enforced in the database.
 
@@ -8,7 +8,7 @@ Light/dark theme toggle lives in the top-right; the choice is remembered.
 
 ## Pages
 
-- **Calendar** (`/`) — all 50 days colored by block, click a day for its detail page.
+- **Calendar** (`/`) — all 40 days colored by block, click a day for its detail page.
 - **Day** (`/day/:n`) — five sections (intro, activity, question, X post, resources).
   Each has fixed content (filled in `days.ts`) and, right below it, an inline notes
   area: click the text to type, click away to render. Notes are markdown with LaTeX
