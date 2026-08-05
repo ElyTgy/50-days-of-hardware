@@ -3,6 +3,7 @@ import { useAuth } from "../lib/auth";
 import { useDays } from "../lib/days";
 import { isSupabaseConfigured } from "../lib/supabase";
 import AuthButton from "./AuthButton";
+import Footer from "./Footer";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Layout() {
@@ -44,6 +45,7 @@ export default function Layout() {
         </div>
       )}
       <Outlet />
+      <Footer />
     </div>
   );
 }

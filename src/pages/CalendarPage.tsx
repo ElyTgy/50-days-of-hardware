@@ -24,8 +24,9 @@ export default function CalendarPage() {
       <div className="page-head">
         <h1 className="page-title">The calendar</h1>
         <p className="page-sub">
-          A daily, broad, and hands-on tour of EE fundamentals to bridge the
-          gap between theory taught in school and real engineering projects.
+          A daily, broad, and hands-on tour of the fundamentals made to
+          bridge the gap between the theory taught in school and the
+          practical knowledge needed for real engineering projects.
         </p>
       </div>
       <Legend active={active} onToggle={toggle} />
