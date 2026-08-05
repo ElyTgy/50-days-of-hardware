@@ -20,11 +20,13 @@ import {
  */
 
 class ImageWidget extends WidgetType {
-  constructor(
-    private readonly url: string,
-    private readonly alt: string,
-  ) {
+  private readonly url: string;
+  private readonly alt: string;
+
+  constructor(url: string, alt: string) {
     super();
+    this.url = url;
+    this.alt = alt;
   }
   eq(other: ImageWidget) {
     return other.url === this.url && other.alt === this.alt;

@@ -25,7 +25,7 @@ function useNotesWidth() {
   widthRef.current = width;
   const [dragging, setDragging] = useState(false);
 
-  const onResizerPointerDown = useCallback((e: React.PointerEvent) => {
+  const onResizerPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     const handle = e.currentTarget;
     handle.setPointerCapture(e.pointerId);
     const startX = e.clientX;
