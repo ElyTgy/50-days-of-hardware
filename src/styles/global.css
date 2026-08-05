@@ -149,7 +149,6 @@ textarea {
 
 .topbar-nav a.active {
   color: var(--ink);
-  background: var(--hover-bg);
 }
 
 .topbar-right {
