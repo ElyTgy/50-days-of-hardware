@@ -62,6 +62,24 @@ export default function ShoppingRow({ item, onEdit, onDelete }: Props) {
           />
         </td>
       ))}
+      <td style={{ textAlign: "center" }}>
+        <input
+          className="cell-input qty-input"
+          type="number"
+          min={1}
+          step={1}
+          defaultValue={item.min_quantity ?? 1}
+          readOnly={!canEdit}
+          onBlur={(e) => {
+            if (!canEdit) return;
+            const n = Math.max(1, Math.round(Number(e.target.value)) || 1);
+            if (n !== (item.min_quantity ?? 1)) {
+              onEdit(item.id, { min_quantity: n });
+            }
+          }}
+          aria-label="Minimum quantity"
+        />
+      </td>
       <td>
         <div className="link-cell">
           {canEdit && (

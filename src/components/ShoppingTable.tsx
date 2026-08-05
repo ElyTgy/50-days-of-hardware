@@ -16,6 +16,7 @@ const blankItem = (): NewItem => ({
   link: "",
   status: "not ordered",
   purchased: false,
+  min_quantity: 1,
 });
 
 export default function ShoppingTable() {
@@ -99,7 +100,7 @@ export default function ShoppingTable() {
     // Fall back to fixed column order when there's no recognizable header.
     const cols = hasHeader
       ? header
-      : ["part_name", "what_it_does", "days_required_for", "related_concepts", "link", "status", "purchased"];
+      : ["part_name", "what_it_does", "days_required_for", "related_concepts", "min_quantity", "link", "status", "purchased"];
 
     const parsed: NewItem[] = dataRows.map((cells) => {
       const item = blankItem();
@@ -108,6 +109,7 @@ export default function ShoppingTable() {
         if (!col) return;
         if (col === "purchased") item.purchased = isTruthy(value);
         else if (col === "status") item.status = normalizeStatus(value);
+        else if (col === "min_quantity") item.min_quantity = Math.max(1, Math.round(Number(value)) || 1);
         else (item as Record<string, unknown>)[col] = value;
       });
       return item;
@@ -127,6 +129,7 @@ export default function ShoppingTable() {
             <th style={{ width: "21%" }}>What it does</th>
             <th style={{ width: "11%" }}>Days required for</th>
             <th style={{ width: "15%" }}>Related concept(s)</th>
+            <th style={{ width: 70 }}>Min qty</th>
             <th style={{ width: 180 }}>Link</th>
             <th style={{ width: 150 }}>Status</th>
             <th style={{ width: 36 }} aria-label="Delete" />
@@ -174,8 +177,8 @@ export default function ShoppingTable() {
           </div>
           <p className="shop-hint">
             CSV columns: part name, what it does, days required for, related
-            concept(s), link, status, purchased. A header row is detected
-            automatically.
+            concept(s), min quantity, link, status, purchased. A header row is
+            detected automatically.
           </p>
         </>
       )}

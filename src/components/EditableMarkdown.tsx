@@ -11,8 +11,8 @@ interface Props {
 }
 
 /**
- * Click-to-edit markdown, Notion-style — the same look and mechanics as
- * NoteBlock (shared .note-* styles) but controlled by the caller: renders
+ * Click-to-edit markdown, Notion-style — shares the .note-* styles used
+ * elsewhere for inline editing, but controlled by the caller: renders
  * `value`, saves on blur via `onSave`. Used for a day's fixed content in
  * edit mode. Supports pasting/dropping images like notes do.
  */

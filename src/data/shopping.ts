@@ -70,6 +70,7 @@ export const SHOPPING_SEED: SeedItem[] = [
     link: "https://leeselectronic.com/en/product/7178-7178TRANSISTOR2N3904NPN5PCS.html",
     status: "not ordered",
     purchased: false,
+    min_quantity: 5,
   },
   {
     part_name: "2N7000 (N-channel MOSFET)",
@@ -107,12 +108,13 @@ export const SHOPPING_SEED: SeedItem[] = [
   {
     part_name: "1N4148 (signal diode)",
     what_it_does:
-      "Flyback/clamp diode, IV-curve device, and charge-pump rectifier",
+      "Flyback/clamp diode, IV-curve device, and charge-pump rectifier. The Day 18 doubler uses 2 at once and stays assembled through Day 29 — need at least 2 in hand simultaneously. Linked as a 4-pack in DO-35 (through-hole), not the single SMD SOD-123 unit.",
     days_required_for: "6, 11, 18, 29",
     related_concepts: "Flyback diode; forward drop; IV curve; charge pump",
-    link: "https://leeselectronic.com/en/product/71130-diode-1n4148-sod-123-400mw-75v.html",
+    link: "https://leeselectronic.com/en/product/7113-diode-fast-switching-1n4148-4pcs.html",
     status: "not ordered",
     purchased: false,
+    min_quantity: 2,
   },
   {
     part_name: "1N5819 (Schottky diode)",
@@ -137,12 +139,13 @@ export const SHOPPING_SEED: SeedItem[] = [
   {
     part_name: "Inductors (10 uH - 1 mH)",
     what_it_does:
-      "Energy-storage element for kickback, SRF, skin-effect, and buck/boost work",
+      "Energy-storage element for kickback, SRF, skin-effect, and buck/boost work. Day 7 needs two in hand at once (sweeping SRF on both) — link is Lee's whole inductor category, not one product, so pick at least 2 specific values rather than ordering a single item.",
     days_required_for: "6, 7, 27",
     related_concepts: "V=L*dI/dt; SRF; skin effect; Q & saturation; buck ripple",
     link: "https://leeselectronic.com/en/category/3051-inductors",
     status: "not ordered",
     purchased: false,
+    min_quantity: 2,
   },
   {
     part_name: "LM358 (op-amp)",
@@ -297,5 +300,16 @@ export const SHOPPING_SEED: SeedItem[] = [
     link: "https://leeselectronic.com/en/product/44240-resistor-kit-1-4w-1280pcs-64-values-1r-10m-ohm-1.html",
     status: "not ordered",
     purchased: false,
+  },
+  {
+    part_name: "Multimeter (2nd unit)",
+    what_it_does:
+      "Day 28 measures current and voltage on a buck converter simultaneously — needs two multimeters in hand at the same time. Not otherwise on this list since one is assumed already owned as bench equipment; add a second if you only have one.",
+    days_required_for: "28",
+    related_concepts: "Voltage vs current measurement; buck converter efficiency",
+    link: "",
+    status: "not ordered",
+    purchased: false,
+    min_quantity: 1,
   },
 ];

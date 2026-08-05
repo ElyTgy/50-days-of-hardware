@@ -1,6 +1,5 @@
 import EditableMarkdown from "./EditableMarkdown";
 import Markdown from "./Markdown";
-import NoteBlock from "./NoteBlock";
 
 interface Props {
   title: string;
@@ -38,7 +37,6 @@ export default function DaySection({
       ) : (
         <p className="day-section-empty">Not written yet.</p>
       )}
-      <NoteBlock dayId={dayId} section={section} />
     </section>
   );
 }

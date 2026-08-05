@@ -52,6 +52,7 @@ export function matchColumn(header: string): string | null {
   if (h.includes("whatitdoes") || h.includes("description") || h.includes("does") || h.includes("purpose")) return "what_it_does";
   if (h.includes("daysrequired") || h.includes("daysfor") || h === "days" || h === "day") return "days_required_for";
   if (h.includes("concept")) return "related_concepts";
+  if (h.includes("minqty") || h.includes("minquantity") || h === "qty" || h === "quantity") return "min_quantity";
   if (h.includes("status")) return "status";
   if (h === "link" || h === "url" || h.includes("link")) return "link";
   if (h.includes("purchase") || h.includes("bought") || h.includes("owned")) return "purchased";

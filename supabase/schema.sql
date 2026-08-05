@@ -49,12 +49,15 @@ create table if not exists shopping_items (
   link text not null default '',
   status text not null default 'not ordered',
   purchased boolean not null default false,
+  min_quantity integer not null default 1,
   created_at timestamptz not null default now()
 );
 
--- Add the status column to tables created before it existed (safe on re-run).
+-- Add columns to tables created before they existed (safe on re-run).
 alter table shopping_items
   add column if not exists status text not null default 'not ordered';
+alter table shopping_items
+  add column if not exists min_quantity integer not null default 1;
 
 create table if not exists resources (
   id uuid primary key default gen_random_uuid(),
@@ -281,6 +284,34 @@ begin
     alter table day_notes add primary key (day_id, section);
   end if;
 end $mig$;
+
+-- ── Consolidate day_notes into one freeform note per day ───────────────────
+-- The app used to keep separate notes per section (equipment, intro, etc);
+-- now each day has a single "Writing" note. Merge any existing per-section
+-- notes into one 'notes' row per day, each labelled with its old section
+-- heading, then drop the old rows. Safe to re-run — once merged, only
+-- 'notes' rows remain and this becomes a no-op.
+do $consolidate$
+begin
+  if exists (select 1 from day_notes where section <> 'notes' and content <> '') then
+    insert into day_notes (day_id, section, content, updated_at)
+    select
+      day_id,
+      'notes',
+      string_agg(
+        '## ' || initcap(replace(section, '_', ' ')) || E'\n\n' || content,
+        E'\n\n' order by section
+      ),
+      now()
+    from day_notes
+    where section <> 'notes' and content <> ''
+    group by day_id
+    on conflict (day_id, section) do update
+      set content = trim(both E'\n' from day_notes.content || E'\n\n' || excluded.content),
+          updated_at = now();
+  end if;
+  delete from day_notes where section <> 'notes';
+end $consolidate$;
 
 -- ── Owner check ────────────────────────────────────────────────────────────
 -- The one email allowed to edit. CHANGE THIS to your Google account email.

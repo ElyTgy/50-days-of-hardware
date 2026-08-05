@@ -80,6 +80,7 @@ export interface ShoppingItem {
   link: string;
   status: ShoppingStatus;
   purchased: boolean;
+  min_quantity?: number;
   created_at?: string;
 }
 
