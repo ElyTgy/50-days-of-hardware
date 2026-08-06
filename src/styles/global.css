@@ -133,8 +133,7 @@ textarea {
   white-space: nowrap;
 }
 
-.topbar-title em {
-  font-style: italic;
+.topbar-title-accent {
   color: var(--ink-soft);
 }
 
