@@ -4,6 +4,7 @@
 
 - Date: Sunday, August 16, 2026
 - Block: Devices
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 

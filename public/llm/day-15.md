@@ -4,6 +4,7 @@
 
 - Date: Wednesday, August 19, 2026
 - Block: Devices
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -17,7 +18,7 @@
 
 ## Prerequisites
 
-*   Day 14 completed.
+*   [Day 14](https://hardware.ellietaghavi.com/llm/day-14.md) completed.
 *   Understanding of parasitic capacitance in physical components.
 
 ## Introduction & background

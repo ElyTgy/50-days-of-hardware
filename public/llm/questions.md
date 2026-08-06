@@ -6,7 +6,7 @@ Question NUMBERS and source names only. Do not add verbatim third-party question
 
 ## Capacitive touch
 
-### Day 1 — Touch pad relaxation oscillator
+### [Day 1 — Touch pad relaxation oscillator](https://hardware.ellietaghavi.com/llm/day-01.md)
 
 *   Explain in 60 seconds, out loud: where the extra ~1 pF physically comes from (fringing fields + your body as a ground return), and the difference between self- and mutual-capacitance sensing.
 *   [EEVblog #831 - Capacitive Touch Sensing Fundamentals](https://www.youtube.com/watch?v=Fj0XkYcvyC8)
@@ -14,14 +14,14 @@ Question NUMBERS and source names only. Do not add verbatim third-party question
 
 ---
 
-### Day 2 — Charge-transfer sensing
+### [Day 2 — Charge-transfer sensing](https://hardware.ellietaghavi.com/llm/day-02.md)
 
 *   Open one real touch-sensing app note (Microchip QTouch or a TI CapTIvate/MSP cap-sense note) and identify which measurement method it uses.
 *   Explain out loud why counting discrete charge-transfer cycles beats taking a single analog ADC read of the pad.
 
 ---
 
-### Day 3 — Foil matrix & ghost touches
+### [Day 3 — Foil matrix & ghost touches](https://hardware.ellietaghavi.com/llm/day-03.md)
 
 *   Explain why a phone touchscreen glitches on a cheap charger (noise injected into the sense lines).
 *   Commit all code/notes to the robot-sensor repo.
@@ -31,88 +31,88 @@ Question NUMBERS and source names only. Do not add verbatim third-party question
 
 ## Passives & filters
 
-### Day 4 — Capacitor step response
+### [Day 4 — Capacitor step response](https://hardware.ellietaghavi.com/llm/day-04.md)
 
 *   Monty Choy Hardware Guide: Capacitors Q21–37, the conceptual half (what is capacitance, series/parallel, energy, DC vs AC behavior). Score yourself.
 *   [All About Circuits: RC Time Constants](https://www.allaboutcircuits.com/textbook/direct-current/chpt-16/voltage-and-current-calculations/)
 
 ---
 
-### Day 5 — Your capacitor is lying
+### [Day 5 — Your capacitor is lying](https://hardware.ellietaghavi.com/llm/day-05.md)
 
 *   Monty Choy Hardware Guide: Q21–37 remainder (ESR, ESL, dielectric types, when C0G vs X7R vs electrolytic).
 *   [Murata SimSurfing Design Tool](https://ds.murata.co.jp/simsurfing/index.html?lcid=en-us)
 *   [EEVblog #859 - Bypass Capacitor Tutorial](https://www.youtube.com/watch?v=BcJ6UdDx1vg)
 
-### Day 6 — Inductor kickback
+### [Day 6 — Inductor kickback](https://hardware.ellietaghavi.com/llm/day-06.md)
 
 *   Monty Choy inductors Q38–54, first half (what is inductance, energy storage, V–I relationship, why coils).
 *   [EEVblog #441 - Inductive Kickback & Flyback Diodes](https://www.youtube.com/watch?v=LXGtE3X2kIQ)
 
 ---
 
-### Day 7 — Skin effect
+### [Day 7 — Skin effect](https://hardware.ellietaghavi.com/llm/day-07.md)
 
 *   Monty Choy Q56 verbatim, plus the rest of inductors Q38–54 (Q, core loss, saturation).
 *   [W2AEW - Skin Effect Basics](https://www.youtube.com/watch?v=7uKbbJ1kX7I)
 
 ---
 
-### Day 8 — LPF or HPF in 30 seconds
+### [Day 8 — LPF or HPF in 30 seconds](https://hardware.ellietaghavi.com/llm/day-08.md)
 
 *   Fronczak I, the two "draw Vo for a step input" RC circuits — do them cold, they're the same two networks in time domain.
 *   [Afrotechmods: Low pass and high pass filters](https://www.youtube.com/watch?v=vjoZ0zJEL0s)
 
 ---
 
-### Day 9 — Band-pass & Bode by hand
+### [Day 9 — Band-pass & Bode by hand](https://hardware.ellietaghavi.com/llm/day-09.md)
 
 *   Monty Choy Filters section.
 *   Explain your Helix ECT front-end's band-pass in exactly these terms.
 
 ---
 
-### Day 10 — Puzzle day #1
+### [Day 10 — Puzzle day #1](https://hardware.ellietaghavi.com/llm/day-10.md)
 
 *   You just solved the family your Substack interview question comes from (RC + logic gate = gateable oscillator/PWM).
 *   Re-do Fronczak I step circuits if puzzle (3) wobbled.
 
 ## Devices
 
-### Day 11 — Diode speed-review
+### [Day 11 — Diode speed-review](https://hardware.ellietaghavi.com/llm/day-11.md)
 
 *   Re-answer whichever of Q72–79 you missed.
 *   [EEVblog #473 - Microcontroller Protection (Diodes)](https://www.youtube.com/watch?v=11XJ4b2zTvk)
 
 ---
 
-### Day 12 — BJT: measure β, then distrust it
+### [Day 12 — BJT: measure β, then distrust it](https://hardware.ellietaghavi.com/llm/day-12.md)
 
 *   Monty BJTs section, the how-does-it-work questions; "why is $\beta$ unreliable?" should now take you one breath.
 *   [All About Circuits: Bipolar Junction Transistors](https://www.allaboutcircuits.com/textbook/semiconductors/chpt-4/introduction-to-bipolar-junction-transistors-bjt/)
 
 ---
 
-### Day 13 — Taming the BJT + the current mirror
+### [Day 13 — Taming the BJT + the current mirror](https://hardware.ellietaghavi.com/llm/day-13.md)
 
 *   Fronczak II, the basic current-mirror question (his note: "the answer is clearly 1 mA").
 *   Fronczak II temperature question: $V_{BE}$ drifts $\approx -2 \text{ mV}/^\circ\text{C}$, so which way does the mirror's output drift?
 
 ---
 
-### Day 14 — MOSFET: find your Vth
+### [Day 14 — MOSFET: find your Vth](https://hardware.ellietaghavi.com/llm/day-14.md)
 
 *   Monty MOSFETs section device questions.
 *   Edaboard classic forum post: "why is the saturation region flat?"
 
 ---
 
-### Day 15 — The gate is not free
+### [Day 15 — The gate is not free](https://hardware.ellietaghavi.com/llm/day-15.md)
 
 *   Monty MOSFETs switching questions (gate charge, why gate drivers exist, switching vs conduction loss).
 *   [Texas Instruments: Understanding MOSFET turn-on/off behavior (PDF)](https://www.ti.com/lit/ml/slua618a/slua618a.pdf)
 
-### Day 16 — The three topologies
+### [Day 16 — The three topologies](https://hardware.ellietaghavi.com/llm/day-16.md)
 
 *   Monty Choy: "When MOSFET vs BJT?" interview question.
 *   Classify common-source / common-gate / source-follower by what each is *for* in one single line each.
@@ -120,14 +120,14 @@ Question NUMBERS and source names only. Do not add verbatim third-party question
 
 ---
 
-### Day 17 — CMOS from zero
+### [Day 17 — CMOS from zero](https://hardware.ellietaghavi.com/llm/day-17.md)
 
 *   Monty Choy CMOS section — all of it. This was your "no clue what CMOS is" item, so the bar is explaining the inverter's structural layout and power consumption story cold.
 *   [Purdue University: The CMOS Inverter PDF](https://engineering.purdue.edu/~vlsi/ECE559_Fall09/Notes/Inverter.pdf)
 
 ---
 
-### Day 18 — Puzzle day #2: name that circuit
+### [Day 18 — Puzzle day #2: name that circuit](https://hardware.ellietaghavi.com/llm/day-18.md)
 
 *   Monty Q104 — charge pump, level shifter, and LDO should now be identifiable on sight.
 *   Verify your answer for $I_o$ in puzzle (3) against the key: it is 10 µA. Did you get it right?
@@ -136,145 +136,145 @@ Question NUMBERS and source names only. Do not add verbatim third-party question
 
 ## Op-amps & PLLs
 
-### Day 19 — Derive, then build
+### [Day 19 — Derive, then build](https://hardware.ellietaghavi.com/llm/day-19.md)
 
 *   Fronczak I, the closed-loop DC gain question (answer: $1 + R_1/R_2$) — this should take 90 seconds max.
 *   Monty Opamps basics section.
 
 ---
 
-### Day 20 — Measure the datasheet
+### [Day 20 — Measure the datasheet](https://hardware.ellietaghavi.com/llm/day-20.md)
 
 *   The classic computation (vlsi4freshers-style): A 1 MHz-GBW op-amp configured for 20 dB of gain has what -3 dB bandwidth? (Answer: 100 kHz — say why).
 *   Monty Opamps AC questions.
 
-### Day 21 — One method, four circuits
+### [Day 21 — One method, four circuits](https://hardware.ellietaghavi.com/llm/day-21.md)
 
 *   Monty Opamps circuit questions.
 *   Re-derive your Helix TIA's gain ($V_o = -I_{in} \cdot R_f$) from the same method — that's the post.
 
 ---
 
-### Day 22 — Make it sing, then make it decide
+### [Day 22 — Make it sing, then make it decide](https://hardware.ellietaghavi.com/llm/day-22.md)
 
 - Texas Instruments: *Op Amps Driving Capacitive Loads* (PDF)
 - LM358 datasheet — output voltage swing and input common-mode range sections
 - A TI or Analog Devices application note on comparator hysteresis (search "comparator hysteresis app note")
 - *The Art of Electronics*, comparator / Schmitt trigger section
-- Day 1 writeup: the CD40106 datasheet's transfer characteristic figure, which today's XY plot should reproduce
+- [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md) writeup: the CD40106 datasheet's transfer characteristic figure, which today's XY plot should reproduce
 
 ---
 
-### Day 23 — Lock a PLL
+### [Day 23 — Lock a PLL](https://hardware.ellietaghavi.com/llm/day-23.md)
 
 *   Monty PLL section — all of it.
 *   How many PLLs are in the signal path between your STM32 crystal and its UART bit clock?
 
 ---
 
-### Day 24 — Puzzle day #3: the Fronczak gauntlet
+### [Day 24 — Puzzle day #3: the Fronczak gauntlet](https://hardware.ellietaghavi.com/llm/day-24.md)
 
-*   These ARE Fronczak's real co-op interview questions — score yourself; a miss sends you back to Day 19/21's derivation habit.
+*   These ARE Fronczak's real co-op interview questions — score yourself; a miss sends you back to [Day 19](https://hardware.ellietaghavi.com/llm/day-19.md)/21's derivation habit.
 
 ---
 
 ## Power electronics
 
-### Day 25 — LDO or buck, rail by rail
+### [Day 25 — LDO or buck, rail by rail](https://hardware.ellietaghavi.com/llm/day-25.md)
 
 *   Monty General Power Supply + "buck vs LDO tradeoffs / when can an LDO be more efficient" — asked verbatim in his list.
 
-### Day 26 — Build the LDO you named on Day 18
+### [Day 26 — Build the LDO you named on Day 18](https://hardware.ellietaghavi.com/llm/day-26.md)
 
 *   Monty LDO section (dropout, efficiency analysis, load regulation).
 
 ---
 
-### Day 27 — Buck converter on paper, then in SPICE
+### [Day 27 — Buck converter on paper, then in SPICE](https://hardware.ellietaghavi.com/llm/day-27.md)
 
 *   Monty Buck Converters → Duty Cycle/Output Voltage + Circuit Analysis subsections.
 
 ---
 
-### Day 28 — Interrogate a real buck
+### [Day 28 — Interrogate a real buck](https://hardware.ellietaghavi.com/llm/day-28.md)
 
 *   Monty Buck → Efficiency/Ripple/Switching Frequency + Power Bridge subsections.
 
 ---
 
-### Day 29 — Two ways to get MORE volts
+### [Day 29 — Two ways to get MORE volts](https://hardware.ellietaghavi.com/llm/day-29.md)
 
 *   Monty Boost Converters + Charge Pumps sections (incl. "how do you spec a capacitor for a charge pump").
 
 ---
 
-### Day 30 — H-bridge
+### [Day 30 — H-bridge](https://hardware.ellietaghavi.com/llm/day-30.md)
 
 *   Monty Half/H-Bridge section: draw both bridges, braking, dead time, high-side NFET drive — all asked directly.
 
-### Day 31 — Current sensing
+### [Day 31 — Current sensing](https://hardware.ellietaghavi.com/llm/day-31.md)
 
 *   Monty Buck → Voltage/Current Sensing subsection.
 *   When should you use shunt vs hall-effect vs inductor-DCR sensing?
 
 ---
 
-### Day 32 — Batteries & BMS
+### [Day 32 — Batteries & BMS](https://hardware.ellietaghavi.com/llm/day-32.md)
 
 *   Monty Batteries → LiPo/Monitoring/Charging/Safety questions — all of them (cell voltage ranges, internal resistance, what a BMS does, cell balancing). Rocket-relevant, interview-relevant, and a great post.
 
 ---
 
-### Day 33 — Puzzle day #4: power gauntlet
+### [Day 33 — Puzzle day #4: power gauntlet](https://hardware.ellietaghavi.com/llm/day-33.md)
 
 *   Puzzle (2) is Monty's Power Architecture question nearly verbatim.
-*   Puzzle (3) is Day 30 inverted.
+*   Puzzle (3) is [Day 30](https://hardware.ellietaghavi.com/llm/day-30.md) inverted.
 *   Spreadsheet-check your power dissipation numbers to verify your handwritten math.
 
 ---
 
 ## RF
 
-### Day 34 — Reflections
+### [Day 34 — Reflections](https://hardware.ellietaghavi.com/llm/day-34.md)
 
 *   mikinty transmission-line questions.
 *   [W2AEW: Basics of Transmission Lines and Reflections](https://www.youtube.com/watch?v=Il_eKuZiEWI)
 
 ---
 
-### Day 35 — Learn to speak S11
+### [Day 35 — Learn to speak S11](https://hardware.ellietaghavi.com/llm/day-35.md)
 
 *   Pull any real LNA datasheet (e.g., from Mini-Circuits) and narrate its S-parameter plots out loud.
 *   Rebuild today's translation table completely from memory tomorrow morning.
 
-### Day 36 — Why the Smith chart is round
+### [Day 36 — Why the Smith chart is round](https://hardware.ellietaghavi.com/llm/day-36.md)
 
 *   Locate open / short / match / the pure-reactance rim cold; explain "moving along a line = rotating around the chart" in one sentence.
 
 ---
 
-### Day 37 — The two-move match
+### [Day 37 — The two-move match](https://hardware.ellietaghavi.com/llm/day-37.md)
 
 *   Monty/mikinty impedance-matching questions.
 *   Shunt-first vs series-first — how did you decide?
 
 ---
 
-### Day 38 — Calibrate, then trust
+### [Day 38 — Calibrate, then trust](https://hardware.ellietaghavi.com/llm/day-38.md)
 
 *   Explain SOL to a teammate in 3 sentences.
 *   Monty/mikinty test-equipment questions about VNAs.
 
 ---
 
-### Day 39 — Cut an antenna
+### [Day 39 — Cut an antenna](https://hardware.ellietaghavi.com/llm/day-39.md)
 
 *   mikinty antenna-basics questions.
 *   "why λ/4 and not λ/2 for a monopole over ground?"
 
 ---
 
-### Day 40 — Your hand is a component
+### [Day 40 — Your hand is a component](https://hardware.ellietaghavi.com/llm/day-40.md)
 
 *   Connect this to your ground-station work: what near-field objects live around your actual antennas?
 

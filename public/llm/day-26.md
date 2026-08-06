@@ -4,6 +4,7 @@
 
 - Date: Sunday, August 30, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -18,8 +19,8 @@
 
 ## Prerequisites
 
-*   Day 18 (Identifying the LDO block diagram).
-*   Day 19 (Op-amp feedback).
+*   [Day 18](https://hardware.ellietaghavi.com/llm/day-18.md) (Identifying the LDO block diagram).
+*   [Day 19](https://hardware.ellietaghavi.com/llm/day-19.md) (Op-amp feedback).
 
 ## Introduction & background
 
@@ -50,7 +51,7 @@ Breadboard it: LM358 error amp + PNP/PMOS pass element + 5.1 V Zener reference +
 ## Question to answer
 
 1. Which specific block sets the output accuracy, and which specific component sets the dropout voltage?
-2. Why do some real LDOs specify a *minimum* output-capacitor ESR (what does that ESR add to the loop mathematically, and how does it connect to Day 22's phase margin)?
+2. Why do some real LDOs specify a *minimum* output-capacitor ESR (what does that ESR add to the loop mathematically, and how does it connect to [Day 22](https://hardware.ellietaghavi.com/llm/day-22.md)'s phase margin)?
 
 ## Additional resources
 

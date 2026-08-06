@@ -4,6 +4,7 @@
 
 - Date: Monday, August 24, 2026
 - Block: Op-amps & PLLs
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -16,7 +17,7 @@
 
 ## Prerequisites
 
-*   Day 19 completed.
+*   [Day 19](https://hardware.ellietaghavi.com/llm/day-19.md) completed.
 *   Familiarity with reading datasheets.
 
 ## Introduction & background

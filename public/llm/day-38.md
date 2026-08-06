@@ -4,6 +4,7 @@
 
 - Date: Friday, September 11, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -11,11 +12,11 @@
 *   SOL (Short, Open, Load) calibration kit
 *   Coaxial cables
 *   30 cm coax stub (spare cable cut at the end)
-*   The 10 µF capacitor saved from Day 5
+*   The 10 µF capacitor saved from [Day 5](https://hardware.ellietaghavi.com/llm/day-05.md)
 
 ## Prerequisites
 
-*   Day 35 & 36 (S-parameters and Smith Chart).
+*   [Day 35](https://hardware.ellietaghavi.com/llm/day-35.md) & 36 (S-parameters and Smith Chart).
 
 ## Introduction & background
 
@@ -34,11 +35,11 @@ $$S_{11(actual)} = f(S_{11(measured)}, Error\ Terms)$$
 
 1. A fully calibrated test bench utilizing the NanoVNA and an SOL kit for the 100–600 MHz band.
 2. A physical reference plane established exactly at the end of the test cable.
-3. Two corrected physical measurements: sweeping a 30 cm coax stub to watch it rotate on the Smith chart, and re-measuring the SRF of the Day 5 capacitor accurately.
+3. Two corrected physical measurements: sweeping a 30 cm coax stub to watch it rotate on the Smith chart, and re-measuring the SRF of the [Day 5](https://hardware.ellietaghavi.com/llm/day-05.md) capacitor accurately.
 
 ## Activity
 
-SOL-calibrate the NanoVNA over 100–600 MHz with the reference plane at your cable's end. Re-measure the standards as a sanity check. Then measure a 30 cm coax stub (watch Day 36's rotation happen on the live Smith display) and re-measure Day 5's capacitor to find its SRF properly.
+SOL-calibrate the NanoVNA over 100–600 MHz with the reference plane at your cable's end. Re-measure the standards as a sanity check. Then measure a 30 cm coax stub (watch [Day 36](https://hardware.ellietaghavi.com/llm/day-36.md)'s rotation happen on the live Smith display) and re-measure [Day 5](https://hardware.ellietaghavi.com/llm/day-05.md)'s capacitor to find its SRF properly.
 
 ## Question to answer
 

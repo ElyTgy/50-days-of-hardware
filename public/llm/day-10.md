@@ -5,6 +5,7 @@
 - Date: Friday, August 14, 2026
 - Block: Passives & filters
 - Puzzle day: yes
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -16,7 +17,7 @@
 
 ## Prerequisites
 
-*   Completion and understanding of Days 1 through 9.
+*   Completion and understanding of [Days 1](https://hardware.ellietaghavi.com/llm/day-01.md) through 9.
 
 ## Introduction & background
 
@@ -38,7 +39,7 @@ Puzzle days synthesize theory into intuition. The behavior of digital logic gate
 
 ## Activity
 
-Paper only, commit answers before any sim. (1) CD40106 inverter, R output→input, C input→ground: what is it, what sets f? (2) Swap in a NOR gate, drive its second input from a slow logic signal: what does that input now do? (What have you built — and how does R set the timing of the gated oscillation?) (3) A scope on AC coupling shows a square wave's flat tops drooping: which Day 8 circuit is secretly responsible?
+Paper only, commit answers before any sim. (1) CD40106 inverter, R output→input, C input→ground: what is it, what sets f? (2) Swap in a NOR gate, drive its second input from a slow logic signal: what does that input now do? (What have you built — and how does R set the timing of the gated oscillation?) (3) A scope on AC coupling shows a square wave's flat tops drooping: which [Day 8](https://hardware.ellietaghavi.com/llm/day-08.md) circuit is secretly responsible?
 **Then:** build (2) with the CD40106/4001 and check yourself.
 
 ## Question to answer

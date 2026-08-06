@@ -4,6 +4,7 @@
 
 - Date: Thursday, August 27, 2026
 - Block: Op-amps & PLLs
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 

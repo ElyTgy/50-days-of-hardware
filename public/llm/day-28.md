@@ -4,6 +4,7 @@
 
 - Date: Tuesday, September 1, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Day 27 (Buck converter theory).
+*   [Day 27](https://hardware.ellietaghavi.com/llm/day-27.md) (Buck converter theory).
 
 ## Introduction & background
 

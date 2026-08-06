@@ -5,6 +5,7 @@
 - Date: Friday, August 28, 2026
 - Block: Op-amps & PLLs
 - Puzzle day: yes
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -13,7 +14,7 @@
 
 ## Prerequisites
 
-*   Days 18 through 22 (Op-amps, comparators, current mirrors).
+*   [Days 18](https://hardware.ellietaghavi.com/llm/day-18.md) through 22 (Op-amps, comparators, current mirrors).
 
 ## Introduction & background
 
@@ -36,7 +37,7 @@ $$R_{eq} = \frac{1}{C f_s}$$
 
 ## Activity
 
-Paper, committed answers, then verify. (1) Fronczak I: high-gain comparator, − input grounded, sinusoid into + — draw the output exactly. (2) Fronczak I: a capacitor alternately switched between Vin and Vout at frequency fs — show it acts as a resistor and derive Req = 1/(C·fs). (3) Op-amp with capacitor feedback and resistor input, square wave in — draw the output and name the circuit. (4) If you skipped it Day 18: Fronczak II's mirror + op-amp Io problem.
+Paper, committed answers, then verify. (1) Fronczak I: high-gain comparator, − input grounded, sinusoid into + — draw the output exactly. (2) Fronczak I: a capacitor alternately switched between Vin and Vout at frequency fs — show it acts as a resistor and derive Req = 1/(C·fs). (3) Op-amp with capacitor feedback and resistor input, square wave in — draw the output and name the circuit. (4) If you skipped it [Day 18](https://hardware.ellietaghavi.com/llm/day-18.md): Fronczak II's mirror + op-amp Io problem.
 **Then:** build or Falstad (2) and watch the "resistor" value change as you change fs.
 
 ## Question to answer
@@ -45,7 +46,7 @@ Paper, committed answers, then verify. (1) Fronczak I: high-gain comparator, −
 
 ## Additional resources
 
-*   These ARE Fronczak's real co-op interview questions — score yourself; a miss sends you back to Day 19/21's derivation habit.
+*   These ARE Fronczak's real co-op interview questions — score yourself; a miss sends you back to [Day 19](https://hardware.ellietaghavi.com/llm/day-19.md)/21's derivation habit.
 
 ---
 

@@ -4,6 +4,7 @@
 
 - Date: Saturday, September 12, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -14,7 +15,7 @@
 
 ## Prerequisites
 
-*   Day 38 (Calibrated NanoVNA usage).
+*   [Day 38](https://hardware.ellietaghavi.com/llm/day-38.md) (Calibrated NanoVNA usage).
 
 ## Introduction & background
 

@@ -4,6 +4,7 @@
 
 - Date: Monday, September 7, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 

@@ -4,6 +4,7 @@
 
 - Date: Thursday, August 20, 2026
 - Block: Devices
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -17,7 +18,7 @@
 
 ## Prerequisites
 
-*   Day 14 (MOSFET biasing).
+*   [Day 14](https://hardware.ellietaghavi.com/llm/day-14.md) (MOSFET biasing).
 *   Understanding of impedance and voltage dividers.
 
 ## Introduction & background

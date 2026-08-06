@@ -4,6 +4,7 @@
 
 - Date: Tuesday, September 8, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -13,7 +14,7 @@
 
 ## Prerequisites
 
-*   Day 34 (Reflection coefficient $\Gamma$).
+*   [Day 34](https://hardware.ellietaghavi.com/llm/day-34.md) (Reflection coefficient $\Gamma$).
 *   Basic understanding of logarithmic scales (Decibels).
 
 ## Introduction & background

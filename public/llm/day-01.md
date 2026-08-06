@@ -4,6 +4,7 @@
 
 - Date: Wednesday, August 5, 2026
 - Block: Capacitive touch
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 

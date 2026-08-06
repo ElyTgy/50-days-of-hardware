@@ -4,22 +4,23 @@
 
 - Date: Wednesday, September 2, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
 *   Computer with LTspice software
-*   Charge-pump circuit saved from Day 18
+*   Charge-pump circuit saved from [Day 18](https://hardware.ellietaghavi.com/llm/day-18.md)
 *   1 kΩ resistor and 100 Ω resistor
 *   Oscilloscope and Multimeter
 
 ## Prerequisites
 
-*   Day 18 (Charge pumps).
-*   Day 27 (Switching converter basics).
+*   [Day 18](https://hardware.ellietaghavi.com/llm/day-18.md) (Charge pumps).
+*   [Day 27](https://hardware.ellietaghavi.com/llm/day-27.md) (Switching converter basics).
 
 ## Introduction & background
 
-Stepping voltage up requires either a boost converter or a charge pump. A boost converter uses the inductive kickback (discovered on Day 6) to fling voltage higher than the input supply, smoothing it into DC with a capacitor. Theoretically, if the duty cycle approaches 100%, the voltage goes to infinity. In reality, parasitic series resistance (ESR) in the inductor and switch destroys the efficiency and clamps the maximum voltage. Charge pumps generate higher voltages without inductors by simply charging capacitors in parallel and discharging them in series. They are cheap and compact, but have notoriously high output impedance, meaning their voltage sags massively if you try to draw any real current.
+Stepping voltage up requires either a boost converter or a charge pump. A boost converter uses the inductive kickback (discovered on [Day 6](https://hardware.ellietaghavi.com/llm/day-06.md)) to fling voltage higher than the input supply, smoothing it into DC with a capacitor. Theoretically, if the duty cycle approaches 100%, the voltage goes to infinity. In reality, parasitic series resistance (ESR) in the inductor and switch destroys the efficiency and clamps the maximum voltage. Charge pumps generate higher voltages without inductors by simply charging capacitors in parallel and discharging them in series. They are cheap and compact, but have notoriously high output impedance, meaning their voltage sags massively if you try to draw any real current.
 
 ## Core equations
 
@@ -38,7 +39,7 @@ $$V_{out} = \frac{V_{in}}{1 - D}$$
 
 ## Activity
 
-LTspice a boost: 5 V→12 V, 100 kHz; verify Vout = Vin/(1−D). Push D to 0.95, then add realistic ESR/switch resistance and re-run. Then reload your Day 18 charge-pump doubler with 1 kΩ, then 100 Ω, and measure the sag.
+LTspice a boost: 5 V→12 V, 100 kHz; verify Vout = Vin/(1−D). Push D to 0.95, then add realistic ESR/switch resistance and re-run. Then reload your [Day 18](https://hardware.ellietaghavi.com/llm/day-18.md) charge-pump doubler with 1 kΩ, then 100 Ω, and measure the sag.
 
 ## Question to answer
 

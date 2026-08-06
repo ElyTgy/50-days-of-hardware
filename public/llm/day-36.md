@@ -4,6 +4,7 @@
 
 - Date: Wednesday, September 9, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -11,7 +12,7 @@
 
 ## Prerequisites
 
-*   Day 35 (S11 and Reflection Coefficient).
+*   [Day 35](https://hardware.ellietaghavi.com/llm/day-35.md) (S11 and Reflection Coefficient).
 *   Understanding of complex impedance ($Z = R + jX$).
 
 ## Introduction & background

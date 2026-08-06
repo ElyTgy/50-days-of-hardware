@@ -4,6 +4,7 @@
 
 - Date: Sunday, August 9, 2026
 - Block: Passives & filters
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -14,7 +15,7 @@
 
 ## Prerequisites
 
-*   Day 4 completed.
+*   [Day 4](https://hardware.ellietaghavi.com/llm/day-04.md) completed.
 *   Basic familiarity with LTspice AC sweeps.
 
 ## Introduction & background

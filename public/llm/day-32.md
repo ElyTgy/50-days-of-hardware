@@ -4,6 +4,7 @@
 
 - Date: Saturday, September 5, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Day 31 (INA219 data logging setup).
+*   [Day 31](https://hardware.ellietaghavi.com/llm/day-31.md) (INA219 data logging setup).
 
 ## Introduction & background
 

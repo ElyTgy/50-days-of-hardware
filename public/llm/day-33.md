@@ -5,6 +5,7 @@
 - Date: Sunday, September 6, 2026
 - Block: Power electronics
 - Puzzle day: yes
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -13,7 +14,7 @@
 
 ## Prerequisites
 
-*   Days 25 through 30 (Buck, boost, LDOs, and FET switching).
+*   [Days 25](https://hardware.ellietaghavi.com/llm/day-25.md) through 30 (Buck, boost, LDOs, and FET switching).
 
 ## Introduction & background
 
@@ -45,7 +46,7 @@ Paper. (1) Three schematics using the same three parts (switch, diode, inductor)
 ## Additional resources
 
 *   Puzzle (2) is Monty's Power Architecture question nearly verbatim.
-*   Puzzle (3) is Day 30 inverted.
+*   Puzzle (3) is [Day 30](https://hardware.ellietaghavi.com/llm/day-30.md) inverted.
 *   Spreadsheet-check your power dissipation numbers to verify your handwritten math.
 
 ---

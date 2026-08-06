@@ -4,6 +4,7 @@
 
 - Date: Wednesday, August 26, 2026
 - Block: Op-amps & PLLs
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -20,8 +21,8 @@
 
 ## Prerequisites
 
-* Day 20 (op-amp bandwidth and speed — you'll reuse your measured V_OH/V_OL habit)
-* Day 1 (the touch oscillator)
+* [Day 20](https://hardware.ellietaghavi.com/llm/day-20.md) (op-amp bandwidth and speed — you'll reuse your measured V_OH/V_OL habit)
+* [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md) (the touch oscillator)
 * Basic understanding of RC phase shifts and the RC charging equation
 
 ## Introduction & background
@@ -100,7 +101,7 @@ LM358 unity buffer driving 1 µF directly on the output — scope it (oscillatin
 - LM358 datasheet — output voltage swing and input common-mode range sections
 - A TI or Analog Devices application note on comparator hysteresis (search "comparator hysteresis app note")
 - *The Art of Electronics*, comparator / Schmitt trigger section
-- Day 1 writeup: the CD40106 datasheet's transfer characteristic figure, which today's XY plot should reproduce
+- [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md) writeup: the CD40106 datasheet's transfer characteristic figure, which today's XY plot should reproduce
 
 ---
 

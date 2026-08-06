@@ -87,6 +87,51 @@ const pad2 = (n) => String(n).padStart(2, "0");
 const clean = (s) => (s ?? "").toString().trim();
 const NOT_WRITTEN = "_Not written yet._";
 
+// AI assistants fetching these files can only follow URLs that literally
+// appear in the fetched content — they can't construct URLs themselves.
+// Every cross-reference below is therefore emitted as an absolute link,
+// never a bare filename or relative path.
+const BASE_URL = (process.env.LLM_BASE_URL ?? "https://hardware.ellietaghavi.com").replace(
+  /\/+$/,
+  "",
+);
+const dayFile = (n) => `day-${pad2(n)}.md`;
+const llmUrl = (file) => `${BASE_URL}/llm/${file}`;
+const dayUrl = (n) => llmUrl(dayFile(n));
+
+/**
+ * Turn "Day N" / "Days N" mentions inside free text into absolute links to
+ * that day's file — but only when N is an actually-scheduled day (skips
+ * things like "day(s) 48, 49, 50" that outrun the 40-day schedule) and only
+ * for other days (skipNumber, usually the current day, is left as plain
+ * text since a page linking to itself isn't useful).
+ */
+function linkifyDayMentions(text, validNumbers, skipNumber) {
+  const str = clean(text);
+  if (!str) return str;
+  return str.replace(/\b(Days?)\s+(\d{1,3})\b/g, (match, word, numStr) => {
+    const n = Number(numStr);
+    if (!validNumbers.has(n) || n === skipNumber) return match;
+    return `[${word} ${numStr}](${dayUrl(n)})`;
+  });
+}
+
+/** Same idea, but for inventory's bare comma-separated "day(s) N, M" lists. */
+function linkifyDayList(raw, validNumbers) {
+  const str = clean(raw);
+  if (!str) return str;
+  return str
+    .split(",")
+    .map((token) => {
+      const trimmed = token.trim();
+      const n = Number(trimmed);
+      return Number.isInteger(n) && validNumbers.has(n)
+        ? `[${trimmed}](${dayUrl(n)})`
+        : trimmed;
+    })
+    .join(", ");
+}
+
 const sectionBlock = (title, body) =>
   `## ${title}\n\n${clean(body) || NOT_WRITTEN}\n`;
 
@@ -115,18 +160,20 @@ async function main() {
     .filter((d) => d.position !== null)
     .sort((a, b) => Number(a.position) - Number(b.position))
     .map((d, i) => ({ ...d, number: i + 1 }));
+  const validNumbers = new Set(scheduled.map((d) => d.number));
 
   // ---- index.md --------------------------------------------------------
   let index = HEADER;
   index += "# 40 Days of Hardware — day index\n\n";
-  index += `${scheduled.length} scheduled days. Full content for each is at \`day-NN.md\` in this folder ` +
-    `(e.g. \`day-01.md\`). This file is a table of contents only.\n\n`;
+  index += `${scheduled.length} scheduled days. Full content for each is linked below ` +
+    `(title cell → \`${llmUrl("day-NN.md")}\`). This file is a table of contents only.\n\n`;
   index += "| Day | Date | Title | Block | Summary |\n";
   index += "| --- | --- | --- | --- | --- |\n";
   for (const d of scheduled) {
+    const title = cell(d.topic) || "Untitled";
     index +=
       `| ${d.number} | ${cell(formatDateLong(dateForDay(d.number)))} | ` +
-      `${cell(d.topic) || "Untitled"} | ${cell(blockName(d.block_id))} | ${cell(oneLiner(d))} |\n`;
+      `[${title}](${dayUrl(d.number)}) | ${cell(blockName(d.block_id))} | ${cell(oneLiner(d))} |\n`;
   }
   await writeFile(path.join(OUT_DIR, "index.md"), index);
 
@@ -137,11 +184,13 @@ async function main() {
     md += `- Date: ${formatDateLong(dateForDay(d.number))}\n`;
     md += `- Block: ${blockName(d.block_id)}\n`;
     if (d.puzzle) md += `- Puzzle day: yes\n`;
+    md += `- Index: ${llmUrl("index.md")}\n`;
     md += "\n";
     for (const [field, title] of DAY_SECTIONS) {
-      md += sectionBlock(title, d[field]) + "\n";
+      const body = linkifyDayMentions(d[field], validNumbers, d.number);
+      md += sectionBlock(title, body) + "\n";
     }
-    await writeFile(path.join(OUT_DIR, `day-${pad2(d.number)}.md`), md);
+    await writeFile(path.join(OUT_DIR, dayFile(d.number)), md);
   }
 
   // ---- inventory.md ------------------------------------------------------
@@ -149,7 +198,7 @@ async function main() {
   const itemLine = (i) => {
     const qty = i.min_quantity && i.min_quantity > 1 ? ` (min qty: ${i.min_quantity})` : "";
     const days = clean(i.days_required_for)
-      ? ` — needed for day(s) ${clean(i.days_required_for)}`
+      ? ` — needed for day(s) ${linkifyDayList(i.days_required_for, validNumbers)}`
       : "";
     const link = clean(i.link) ? ` — [link](${clean(i.link)})` : "";
     const what = clean(i.what_it_does);
@@ -194,14 +243,31 @@ async function main() {
     if (!days.length) continue;
     q += `## ${block.name}\n\n`;
     for (const d of days) {
-      q += `### Day ${d.number} — ${clean(d.topic) || "Untitled"}\n\n`;
-      q += `${clean(d.resources)}\n\n`;
+      q += `### [Day ${d.number} — ${clean(d.topic) || "Untitled"}](${dayUrl(d.number)})\n\n`;
+      q += `${linkifyDayMentions(d.resources, validNumbers, d.number)}\n\n`;
     }
   }
   await writeFile(path.join(OUT_DIR, "questions.md"), q);
 
+  // ---- README.md ---------------------------------------------------------
+  // Flat directory of absolute URLs to every generated file — a fallback an
+  // assistant can fetch to reach anything else in this folder, in case it
+  // only ever discovers this one page.
+  let readme = HEADER;
+  readme += "# LLM directory — 40 Days of Hardware\n\n";
+  readme +=
+    "Every generated file in this folder, as an absolute URL. Fetch " +
+    `[index.md](${llmUrl("index.md")}) for the day-by-day table of contents, or jump straight to a file below.\n\n`;
+  readme += `- [index.md](${llmUrl("index.md")}) — day index (table of contents)\n`;
+  for (const d of scheduled) {
+    readme += `- [${dayFile(d.number)}](${dayUrl(d.number)}) — Day ${d.number}: ${clean(d.topic) || "Untitled"}\n`;
+  }
+  readme += `- [inventory.md](${llmUrl("inventory.md")}) — parts inventory\n`;
+  readme += `- [questions.md](${llmUrl("questions.md")}) — check-yourself question references\n`;
+  await writeFile(path.join(OUT_DIR, "README.md"), readme);
+
   console.log(
-    `[generate-llm-files] wrote index.md, day-01..${pad2(scheduled.length)}.md, inventory.md, questions.md to public/llm/`,
+    `[generate-llm-files] wrote index.md, day-01..${pad2(scheduled.length)}.md, inventory.md, questions.md, README.md to public/llm/`,
   );
 }
 

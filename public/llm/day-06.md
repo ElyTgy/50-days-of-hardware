@@ -4,6 +4,7 @@
 
 - Date: Monday, August 10, 2026
 - Block: Passives & filters
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 

@@ -4,6 +4,7 @@
 
 - Date: Tuesday, August 25, 2026
 - Block: Op-amps & PLLs
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -16,7 +17,7 @@
 
 ## Prerequisites
 
-*   Day 19 (Op-amp golden rules).
+*   [Day 19](https://hardware.ellietaghavi.com/llm/day-19.md) (Op-amp golden rules).
 *   Familiarity with Kirchhoff’s Current Law (KCL).
 
 ## Introduction & background

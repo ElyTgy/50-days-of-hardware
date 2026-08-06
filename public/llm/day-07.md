@@ -4,6 +4,7 @@
 
 - Date: Tuesday, August 11, 2026
 - Block: Passives & filters
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -14,7 +15,7 @@
 
 ## Prerequisites
 
-*   Day 5 (capacitor/inductor Self-Resonant Frequency).
+*   [Day 5](https://hardware.ellietaghavi.com/llm/day-05.md) (capacitor/inductor Self-Resonant Frequency).
 *   Basic understanding of AC vs. DC current flow.
 
 ## Introduction & background

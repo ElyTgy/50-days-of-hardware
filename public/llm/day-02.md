@@ -4,6 +4,7 @@
 
 - Date: Thursday, August 6, 2026
 - Block: Capacitive touch
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -14,7 +15,7 @@
 
 ## Prerequisites
 
-*   Day 1 completed.
+*   [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md) completed.
 *   Familiarity with MCU GPIO manipulation (input/output toggling).
 *   Basic C/C++ programming for serial output.
 

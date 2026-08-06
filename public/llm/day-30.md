@@ -4,6 +4,7 @@
 
 - Date: Thursday, September 3, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Day 15 (MOSFET gate drive).
+*   [Day 15](https://hardware.ellietaghavi.com/llm/day-15.md) (MOSFET gate drive).
 
 ## Introduction & background
 

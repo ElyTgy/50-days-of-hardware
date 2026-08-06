@@ -4,6 +4,7 @@
 
 - Date: Friday, September 4, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -17,8 +18,8 @@
 
 ## Prerequisites
 
-*   Day 21 (Difference amp).
-*   Day 30 (Motor driving basics).
+*   [Day 21](https://hardware.ellietaghavi.com/llm/day-21.md) (Difference amp).
+*   [Day 30](https://hardware.ellietaghavi.com/llm/day-30.md) (Motor driving basics).
 
 ## Introduction & background
 
@@ -50,7 +51,7 @@ Put the INA219 in series with the motor; log current at 10 Hz during start, stea
 ## Question to answer
 
 1. Your low-side shunt lifted the motor's "ground" by $I \cdot R$ — when does that break things in a real system?
-2. What does high-side sensing demand of the amplifier instead (surviving/rejecting a common-mode near $V_{bat}$ — Day 21's difference amp, graduated)?
+2. What does high-side sensing demand of the amplifier instead (surviving/rejecting a common-mode near $V_{bat}$ — [Day 21](https://hardware.ellietaghavi.com/llm/day-21.md)'s difference amp, graduated)?
 
 ## Additional resources
 

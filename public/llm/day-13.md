@@ -4,6 +4,7 @@
 
 - Date: Monday, August 17, 2026
 - Block: Devices
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -16,7 +17,7 @@
 
 ## Prerequisites
 
-*   Day 12 completed.
+*   [Day 12](https://hardware.ellietaghavi.com/llm/day-12.md) completed.
 *   Understanding of voltage dividers.
 
 ## Introduction & background

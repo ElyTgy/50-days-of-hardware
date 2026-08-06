@@ -4,6 +4,7 @@
 
 - Date: Monday, August 31, 2026
 - Block: Power electronics
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -12,7 +13,7 @@
 
 ## Prerequisites
 
-*   Day 6 (Inductor kickback and $V = L \frac{dI}{dt}$).
+*   [Day 6](https://hardware.ellietaghavi.com/llm/day-06.md) (Inductor kickback and $V = L \frac{dI}{dt}$).
 
 ## Introduction & background
 
@@ -38,7 +39,7 @@ $$\Delta I_L = \frac{(V_{in} - V_{out}) \cdot D}{f_{sw} \cdot L}$$
 
 ## Activity
 
-15 minutes, paper: derive D = Vout/Vin from volt-second balance (the inductor's average voltage over one cycle must be zero — or Day 6 told you what happens). Then LTspice an ideal buck: 12 V→5 V, 100 kHz, 33 µH, 100 µF, 1 A load. Plot inductor current; measure ripple ΔI and verify against V·t/L. Shrink L to 3.3 µH and re-run.
+15 minutes, paper: derive D = Vout/Vin from volt-second balance (the inductor's average voltage over one cycle must be zero — or [Day 6](https://hardware.ellietaghavi.com/llm/day-06.md) told you what happens). Then LTspice an ideal buck: 12 V→5 V, 100 kHz, 33 µH, 100 µF, 1 A load. Plot inductor current; measure ripple ΔI and verify against V·t/L. Shrink L to 3.3 µH and re-run.
 
 ## Question to answer
 

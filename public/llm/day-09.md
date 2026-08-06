@@ -4,6 +4,7 @@
 
 - Date: Thursday, August 13, 2026
 - Block: Passives & filters
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Day 8 (RC filters) completed.
+*   [Day 8](https://hardware.ellietaghavi.com/llm/day-08.md) (RC filters) completed.
 *   Basic understanding of what an op-amp unity buffer does.
 
 ## Introduction & background
@@ -45,7 +46,7 @@ Hand-sketch the Bode magnitude of an HPF ($f_c = 160 \text{ Hz}$) cascaded with 
 ## Question to answer
 
 1. What exactly did removing the op-amp buffer do to your measured corner frequencies?
-2. Applying Day 8's open/short trick to the loading between stages, why does this distortion happen?
+2. Applying [Day 8](https://hardware.ellietaghavi.com/llm/day-08.md)'s open/short trick to the loading between stages, why does this distortion happen?
 
 ## Additional resources
 

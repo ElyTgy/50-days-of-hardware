@@ -4,6 +4,7 @@
 
 - Date: Friday, August 7, 2026
 - Block: Capacitive touch
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Day 2 firmware functioning correctly.
+*   [Day 2](https://hardware.ellietaghavi.com/llm/day-02.md) firmware functioning correctly.
 *   Understanding of arrays and nested loops in C/C++.
 
 ## Introduction & background
@@ -33,12 +34,12 @@ $$C_{mutual} = \frac{\varepsilon A}{d}$$
 ## What you're building
 
 1. A physical 2x2 multi-touch trackpad prototype utilizing a row/column copper foil grid.
-2. Firmware to sequentially drive the rows and sense the columns using Day 2's charge-transfer logic.
+2. Firmware to sequentially drive the rows and sense the columns using [Day 2](https://hardware.ellietaghavi.com/llm/day-02.md)'s charge-transfer logic.
 3. A filtering system using a 20-sample moving-average baseline and a fixed threshold to process the touches.
 
 ## Activity
 
-Cut a 2×2 foil matrix. Drive rows with GPIOs, sense columns with Day 2's code. Add a 20-sample moving-average baseline and a fixed threshold. Localize a touch to a cell; record a demo.
+Cut a 2×2 foil matrix. Drive rows with GPIOs, sense columns with [Day 2](https://hardware.ellietaghavi.com/llm/day-02.md)'s code. Add a 20-sample moving-average baseline and a fixed threshold. Localize a touch to a cell; record a demo.
 
 ## Question to answer
 

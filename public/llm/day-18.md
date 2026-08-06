@@ -5,6 +5,7 @@
 - Date: Saturday, August 22, 2026
 - Block: Devices
 - Puzzle day: yes
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -15,7 +16,7 @@
 
 ## Prerequisites
 
-*   Days 11 (Diodes), Day 13 (Current mirrors), and Day 16 (MOSFET topologies).
+*   [Days 11](https://hardware.ellietaghavi.com/llm/day-11.md) (Diodes), [Day 13](https://hardware.ellietaghavi.com/llm/day-13.md) (Current mirrors), and [Day 16](https://hardware.ellietaghavi.com/llm/day-16.md) (MOSFET topologies).
 
 ## Introduction & background
 
@@ -39,7 +40,7 @@ $$V_{out} \approx 2 \cdot V_{in}$$
 ## Activity
 
 Paper, commit before simulating. (1) Square wave source → series cap → node with a diode down to ground and a diode forward to an output cap: what is Vout and why does each diode-cap pair add one Vin? (2) NMOS, source grounded, 10 kΩ pull-up to 5 V on the drain, gate driven by 3.3 V logic, output at the drain: name it; what happened to the signal's polarity and drive strength? (3) Fronczak II: op-amp's + input fed by a current mirror's 1 mA through 4 kΩ from 5 V, output driving a MOSFET whose source resistor is 100 kΩ to ground — find Io. (4) Op-amp + PNP pass transistor + Zener on the + input + divider feedback: what three-block circuit is this?
-**Then:** build (1) and measure it actually doubling under light load. Keep it for Day 29.
+**Then:** build (1) and measure it actually doubling under light load. Keep it for [Day 29](https://hardware.ellietaghavi.com/llm/day-29.md).
 
 ## Question to answer
 

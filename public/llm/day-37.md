@@ -4,6 +4,7 @@
 
 - Date: Thursday, September 10, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -12,7 +13,7 @@
 
 ## Prerequisites
 
-*   Day 36 (Smith chart navigation).
+*   [Day 36](https://hardware.ellietaghavi.com/llm/day-36.md) (Smith chart navigation).
 
 ## Introduction & background
 

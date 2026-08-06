@@ -4,18 +4,19 @@
 
 - Date: Sunday, September 13, 2026
 - Block: RF
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
-*   Tuned 433 MHz antenna from Day 39
+*   Tuned 433 MHz antenna from [Day 39](https://hardware.ellietaghavi.com/llm/day-39.md)
 *   NanoVNA
 *   Metal box or enclosure
 *   Copper tape/scrap and SMD components (for matching, if necessary)
 
 ## Prerequisites
 
-*   Day 39 (Antenna tuning).
-*   Day 1 (Fringing fields and body capacitance).
+*   [Day 39](https://hardware.ellietaghavi.com/llm/day-39.md) (Antenna tuning).
+*   [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md) (Fringing fields and body capacitance).
 
 ## Introduction & background
 
@@ -38,11 +39,11 @@ $$r \approx \frac{2D^2}{\lambda}$$
 
 ## Activity
 
-With yesterday's antenna mid-sweep: grab it — record how far the dip moves. Hold it near a metal box, then inside one — record again. If the "installed" match is off, add the Day 37 L-match on a scrap of copper and capture before/after S11.
+With yesterday's antenna mid-sweep: grab it — record how far the dip moves. Hold it near a metal box, then inside one — record again. If the "installed" match is off, add the [Day 37](https://hardware.ellietaghavi.com/llm/day-37.md) L-match on a scrap of copper and capture before/after S11.
 
 ## Question to answer
 
-1. What did your hand physically change without touching the conductor (near-field dielectric + loss — Day 1's fringing fields at 433 MHz)?
+1. What did your hand physically change without touching the conductor (near-field dielectric + loss — [Day 1](https://hardware.ellietaghavi.com/llm/day-01.md)'s fringing fields at 433 MHz)?
 2. Why do real products tune antennas *inside* the final enclosure?
 
 ## Additional resources

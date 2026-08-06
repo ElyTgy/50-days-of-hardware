@@ -4,6 +4,7 @@
 
 - Date: Friday, August 21, 2026
 - Block: Devices
+- Index: https://hardware.ellietaghavi.com/llm/index.md
 
 ## Equipment needed
 
@@ -17,7 +18,7 @@
 
 ## Prerequisites
 
-*   Day 14 & 15 completed.
+*   [Day 14](https://hardware.ellietaghavi.com/llm/day-14.md) & 15 completed.
 *   Understanding of N-channel vs. P-channel operation.
 
 ## Introduction & background
