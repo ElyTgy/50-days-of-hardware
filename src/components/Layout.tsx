@@ -12,40 +12,46 @@ export default function Layout() {
 
   return (
     <div className="shell">
-      <header className="topbar">
-        <NavLink to="/" className="topbar-title">
-          40 Days of <em>Hardware</em>
-        </NavLink>
-        <div className="topbar-right">
-          <nav className="topbar-nav">
-            <NavLink to="/" end>
-              Calendar
-            </NavLink>
-            <NavLink to="/shopping">Shopping</NavLink>
-            <NavLink to="/resources">Resources</NavLink>
-          </nav>
-          {canEdit && (
-            <button
-              type="button"
-              className={`edit-toggle${editing ? " active" : ""}`}
-              aria-pressed={editing}
-              onClick={() => setEditing(!editing)}
-            >
-              {editing ? "done" : "edit"}
-            </button>
-          )}
-          <AuthButton />
-          <ThemeToggle />
-        </div>
-      </header>
-      {!isSupabaseConfigured && (
-        <div className="config-banner">
-          Supabase not connected — notes, shopping, and resources won't save. Add
-          VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local (see README).
-        </div>
-      )}
-      <Outlet />
-      <Footer />
+      <div className="shell-bar">
+        <header className="topbar">
+          <NavLink to="/" className="topbar-title">
+            40 Days of <em>Hardware</em>
+          </NavLink>
+          <div className="topbar-right">
+            <nav className="topbar-nav">
+              <NavLink to="/" end>
+                Calendar
+              </NavLink>
+              <NavLink to="/shopping">Shopping</NavLink>
+              <NavLink to="/resources">Resources</NavLink>
+            </nav>
+            {canEdit && (
+              <button
+                type="button"
+                className={`edit-toggle${editing ? " active" : ""}`}
+                aria-pressed={editing}
+                onClick={() => setEditing(!editing)}
+              >
+                {editing ? "done" : "edit"}
+              </button>
+            )}
+            <AuthButton />
+            <ThemeToggle />
+          </div>
+        </header>
+        {!isSupabaseConfigured && (
+          <div className="config-banner">
+            Supabase not connected — notes, shopping, and resources won't save. Add
+            VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local (see README).
+          </div>
+        )}
+      </div>
+      <div className="shell-content">
+        <Outlet />
+      </div>
+      <div className="shell-bar">
+        <Footer />
+      </div>
     </div>
   );
 }

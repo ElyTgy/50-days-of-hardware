@@ -26,6 +26,10 @@
 
   --w-wide: 1160px;
   --w-read: 720px;
+  /* Main content (calendar/day/shopping) can run wider than the navbar —
+     it's the part that actually needs the room, e.g. the day page's
+     resizable notes split. */
+  --w-content: 1560px;
 }
 
 :root[data-theme="dark"] {
@@ -97,9 +101,17 @@ textarea {
 /* ---------- layout ---------- */
 
 .shell {
+  padding: 0 32px 40px;
+}
+
+.shell-bar {
   max-width: var(--w-wide);
   margin: 0 auto;
-  padding: 0 32px 40px;
+}
+
+.shell-content {
+  max-width: var(--w-content);
+  margin: 0 auto;
 }
 
 .topbar {
@@ -604,7 +616,7 @@ textarea {
 
 @media (min-width: 901px) {
   .day-page {
-    max-width: var(--w-wide);
+    max-width: none;
   }
 
   .day-view-tabs {
