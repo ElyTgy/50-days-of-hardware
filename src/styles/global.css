@@ -870,6 +870,16 @@ textarea {
   margin: 12px 0;
 }
 
+/* live-preview KaTeX — $…$ inline, $$…$$ centered on its own line */
+.cm-live-math-display {
+  text-align: center;
+  padding: 6px 0;
+}
+
+.cm-live-math-display .katex-display {
+  margin: 0;
+}
+
 .cm-live-quote {
   border-left: 2px solid var(--line);
   padding-left: 10px;

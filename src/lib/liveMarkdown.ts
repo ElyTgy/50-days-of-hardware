@@ -1,8 +1,9 @@
 import { syntaxTree } from "@codemirror/language";
 import { markdown } from "@codemirror/lang-markdown";
+import katex from "katex";
 import type { SyntaxNode } from "@lezer/common";
 import { GFM } from "@lezer/markdown";
-import { RangeSetBuilder } from "@codemirror/state";
+import { type EditorState, RangeSetBuilder, StateField } from "@codemirror/state";
 import {
   Decoration,
   type DecorationSet,
@@ -121,6 +122,31 @@ class HrWidget extends WidgetType {
   }
 }
 
+/** KaTeX-rendered math, mirroring the read-only renderer's $…$ / $$…$$
+ *  support (remark-math). Falls back to raw text on bad TeX. */
+class MathWidget extends WidgetType {
+  private readonly tex: string;
+  private readonly display: boolean;
+
+  constructor(tex: string, display: boolean) {
+    super();
+    this.tex = tex;
+    this.display = display;
+  }
+  eq(other: MathWidget) {
+    return other.tex === this.tex && other.display === this.display;
+  }
+  toDOM() {
+    const el = document.createElement(this.display ? "div" : "span");
+    el.className = this.display ? "cm-live-math cm-live-math-display" : "cm-live-math";
+    katex.render(this.tex, el, { displayMode: this.display, throwOnError: false });
+    return el;
+  }
+  ignoreEvent() {
+    return false;
+  }
+}
+
 interface Pending {
   from: number;
   to: number;
@@ -135,11 +161,18 @@ const LINK_RE = /^\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)$/;
 const IMAGE_RE = /^!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)$/;
 const HEADING_RE = /^(#{1,6})(\s+)/;
 const CODE_MARK_RE = /^`+/;
+// $$…$$ may span lines; $…$ must not, and its contents can't start or end
+// with whitespace (so "$5 and $10" stays plain text) — remark-math's rules.
+const BLOCK_MATH_RE = /\$\$([^$]+?)\$\$/g;
+const INLINE_MATH_RE = /\$([^$\n]+?)\$/g;
 
 function buildDecorations(view: EditorView): DecorationSet {
   const { state } = view;
   const pending: Pending[] = [];
+  const codeRanges: { from: number; to: number }[] = [];
   const tree = syntaxTree(state);
+  const overlapsCode = (from: number, to: number) =>
+    codeRanges.some((r) => from < r.to && to > r.from);
 
   for (const { from, to } of view.visibleRanges) {
     tree.iterate({
@@ -191,6 +224,7 @@ function buildDecorations(view: EditorView): DecorationSet {
         }
 
         if (name === "InlineCode") {
+          codeRanges.push({ from: node.from, to: node.to });
           const text = state.sliceDoc(node.from, node.to);
           const m = CODE_MARK_RE.exec(text);
           const markLen = m ? m[0].length : 1;
@@ -256,6 +290,7 @@ function buildDecorations(view: EditorView): DecorationSet {
         }
 
         if (name === "FencedCode" || name === "CodeBlock") {
+          codeRanges.push({ from: node.from, to: node.to });
           const endLine = state.doc.lineAt(Math.min(node.to, state.doc.length)).number;
           for (let n = state.doc.lineAt(node.from).number; n <= endLine; n++) {
             const l = state.doc.line(n);
@@ -267,11 +302,96 @@ function buildDecorations(view: EditorView): DecorationSet {
     });
   }
 
-  pending.sort((a, b) => a.from - b.from || a.to - b.to);
+  // Math is invisible to the markdown parser, so scan the visible text
+  // directly. Blocks first ($$…$$ may span lines), then inline $…$ in
+  // whatever text the blocks didn't claim.
+  const mathRanges: { from: number; to: number }[] = [];
+  for (const { from, to } of view.visibleRanges) {
+    const text = state.sliceDoc(from, to);
+
+    for (const m of text.matchAll(BLOCK_MATH_RE)) {
+      const mFrom = from + m.index;
+      const mTo = mFrom + m[0].length;
+      if (overlapsCode(mFrom, mTo)) continue;
+      mathRanges.push({ from: mFrom, to: mTo });
+      if (selectionTouches(state, mFrom, mTo)) continue;
+      // Multi-line $$ blocks need a block widget, which CodeMirror only
+      // accepts from a StateField — see blockMathField below.
+      if (m[0].includes("\n")) continue;
+      pending.push({
+        from: mFrom,
+        to: mTo,
+        deco: Decoration.replace({ widget: new MathWidget(m[1], true) }),
+      });
+    }
+
+    for (const m of text.matchAll(INLINE_MATH_RE)) {
+      const tex = m[1];
+      if (/^\s|\s$/.test(tex)) continue;
+      const mFrom = from + m.index;
+      const mTo = mFrom + m[0].length;
+      if (overlapsCode(mFrom, mTo)) continue;
+      if (mathRanges.some((r) => mFrom < r.to && mTo > r.from)) continue;
+      mathRanges.push({ from: mFrom, to: mTo });
+      if (selectionTouches(state, mFrom, mTo)) continue;
+      pending.push({
+        from: mFrom,
+        to: mTo,
+        deco: Decoration.replace({ widget: new MathWidget(tex, false) }),
+      });
+    }
+  }
+
+  pending.sort(
+    (a, b) => a.from - b.from || a.deco.startSide - b.deco.startSide || a.to - b.to,
+  );
   const builder = new RangeSetBuilder<Decoration>();
   for (const p of pending) builder.add(p.from, p.to, p.deco);
   return builder.finish();
 }
+
+/** Multi-line $$…$$ rendered as a centered block. Block-replace decorations
+ *  must be provided by a StateField, not a ViewPlugin, so this lives apart
+ *  from the inline pass above. Whole-doc scan — notes are small. */
+function buildBlockMath(state: EditorState): DecorationSet {
+  const builder = new RangeSetBuilder<Decoration>();
+  const text = state.doc.toString();
+  for (const m of text.matchAll(BLOCK_MATH_RE)) {
+    if (!m[0].includes("\n")) continue;
+    const from = m.index;
+    const to = from + m[0].length;
+    // A block widget must replace whole lines: the $$ fences have to sit
+    // alone at the start/end of their lines.
+    if (from !== state.doc.lineAt(from).from || to !== state.doc.lineAt(to).to) continue;
+    if (selectionTouches(state, from, to)) continue;
+    let inCode = false;
+    syntaxTree(state).iterate({
+      from,
+      to,
+      enter: (n) => {
+        if (n.name === "FencedCode" || n.name === "CodeBlock" || n.name === "InlineCode") {
+          inCode = true;
+          return false;
+        }
+      },
+    });
+    if (inCode) continue;
+    builder.add(
+      from,
+      to,
+      Decoration.replace({ widget: new MathWidget(m[1], true), block: true }),
+    );
+  }
+  return builder.finish();
+}
+
+const blockMathField = StateField.define<DecorationSet>({
+  create: buildBlockMath,
+  update(deco, tr) {
+    return tr.docChanged || tr.selection ? buildBlockMath(tr.state) : deco;
+  },
+  provide: (f) => EditorView.decorations.from(f),
+});
 
 const livePreviewPlugin = ViewPlugin.fromClass(
   class {
@@ -289,5 +409,5 @@ const livePreviewPlugin = ViewPlugin.fromClass(
 );
 
 export function liveMarkdown() {
-  return [markdown({ extensions: [GFM] }), EditorView.lineWrapping, livePreviewPlugin];
+  return [markdown({ extensions: [GFM] }), EditorView.lineWrapping, livePreviewPlugin, blockMathField];
 }
