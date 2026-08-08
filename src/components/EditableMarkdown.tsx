@@ -123,7 +123,26 @@ export default function EditableMarkdown({
       } else if (start >= len && v.slice(start - len, start) === marker && v.slice(end, end + len) === marker) {
         exec(start - len, end + len, sel, start - len, end - len);
       } else {
-        exec(start, end, marker + sel + marker, start + len, end + len);
+        // Cursor/selection inside an existing **bold** or *italic* span ->
+        // strip that span's markers instead of nesting a new pair.
+        const spanRe =
+          len === 2 ? /\*\*([^\n*][^\n]*?)\*\*/g : /(?<!\*)\*([^\n*][^\n]*?)\*(?!\*)/g;
+        let span: RegExpExecArray | null = null;
+        for (let m = spanRe.exec(v); m; m = spanRe.exec(v)) {
+          if (m.index > start) break;
+          if (end <= m.index + m[0].length) {
+            span = m;
+            break;
+          }
+        }
+        if (span) {
+          const sFrom = span.index;
+          const sTo = sFrom + span[0].length;
+          const clamp = (p: number) => Math.min(Math.max(p - len, sFrom), sTo - 2 * len);
+          exec(sFrom, sTo, span[1], clamp(start), clamp(end));
+        } else {
+          exec(start, end, marker + sel + marker, start + len, end + len);
+        }
       }
     }
   };

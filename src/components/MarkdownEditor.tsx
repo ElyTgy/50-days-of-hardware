@@ -7,7 +7,8 @@ import {
   indentLess,
   indentMore,
 } from "@codemirror/commands";
-import { indentUnit } from "@codemirror/language";
+import { indentUnit, syntaxTree } from "@codemirror/language";
+import type { SyntaxNode } from "@lezer/common";
 import { dropCursor, EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
 import { liveMarkdown } from "../lib/liveMarkdown";
 import { isHeic, supabase, uploadImage } from "../lib/supabase";
@@ -26,8 +27,27 @@ const insertIndent = (view: EditorView) => {
   return true;
 };
 
+/** The syntax-tree node produced by each wrapper marker. */
+const WRAP_NODE: Record<string, string> = { "**": "StrongEmphasis", "*": "Emphasis" };
+
+/** Find a bold/italic node enclosing `pos`, trying both resolution sides so
+ *  cursors sitting right at a span's edge still count as inside it. */
+const enclosingSpan = (state: EditorState, pos: number, name: string): SyntaxNode | null => {
+  for (const side of [-1, 1] as const) {
+    for (
+      let node: SyntaxNode | null = syntaxTree(state).resolveInner(pos, side);
+      node;
+      node = node.parent
+    ) {
+      if (node.name === name) return node;
+    }
+  }
+  return null;
+};
+
 /** Toggle a markdown wrapper (** or *) around each selection range. With no
- *  selection, inserts the pair and leaves the cursor between the markers. */
+ *  selection, inserts the pair and leaves the cursor between the markers;
+ *  inside an existing bold/italic span, removes the span's markers instead. */
 const toggleWrap = (marker: string) => (view: EditorView) => {
   const { state } = view;
   const len = marker.length;
@@ -57,6 +77,25 @@ const toggleWrap = (marker: string) => (view: EditorView) => {
         ],
         range: EditorSelection.range(from - len, to - len),
       };
+    }
+    // Cursor or selection sits inside an existing span -> strip its markers
+    // (the actual mark nodes, so _underscore_ emphasis unwraps too).
+    const span = enclosingSpan(state, from, WRAP_NODE[marker]);
+    if (span && span.to >= to) {
+      const marks = span.getChildren("EmphasisMark");
+      const open = marks[0];
+      const close = marks[marks.length - 1];
+      if (open && close && open !== close) {
+        const specs = [
+          { from: open.from, to: open.to },
+          { from: close.from, to: close.to },
+        ];
+        const map = state.changes(specs);
+        return {
+          changes: specs,
+          range: EditorSelection.range(map.mapPos(range.anchor), map.mapPos(range.head)),
+        };
+      }
     }
     return {
       changes: [
