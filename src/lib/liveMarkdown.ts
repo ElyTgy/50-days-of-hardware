@@ -433,5 +433,12 @@ const livePreviewPlugin = ViewPlugin.fromClass(
 );
 
 export function liveMarkdown() {
-  return [markdown({ extensions: [GFM] }), EditorView.lineWrapping, livePreviewPlugin, blockMathField];
+  // IndentedCode is removed so Tab-indented lines stay ordinary text; code
+  // blocks are written with ``` fences instead.
+  return [
+    markdown({ extensions: [GFM, { remove: ["IndentedCode"] }] }),
+    EditorView.lineWrapping,
+    livePreviewPlugin,
+    blockMathField,
+  ];
 }
