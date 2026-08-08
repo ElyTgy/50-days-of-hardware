@@ -52,7 +52,10 @@ class ImageWidget extends WidgetType {
     const frame = document.createElement("div");
     frame.className = "cm-live-image-frame";
     if (pct !== null) {
-      frame.style.width = `${pct}%`;
+      // Width goes through a CSS variable rather than an inline width so the
+      // stylesheet can ignore it on narrow screens (sized media goes full
+      // width once the layout collapses to the read/write toggle).
+      frame.style.setProperty("--media-w", `${pct}%`);
       frame.dataset.sized = "";
     }
 
@@ -91,7 +94,7 @@ class ImageWidget extends WidgetType {
         // corner being dragged moves.
         const w = startWidth + (ev.clientX - startX) * 2;
         livePct = clampPct((w / editorWidth) * 100);
-        frame.style.width = `${livePct}%`;
+        frame.style.setProperty("--media-w", `${livePct}%`);
         frame.dataset.sized = "";
       };
       const up = () => {

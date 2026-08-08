@@ -836,12 +836,24 @@ textarea {
 
 /* Images sit centered in a resizable frame; a trailing "|60" in the alt
  * text (written by the corner drag handle) sets its width as a % of the
- * editor, so the size stays proportional at any window width. */
+ * editor via --media-w, so the size stays proportional at any window
+ * width. On narrow screens (where the day view collapses to the read/write
+ * toggle) the chosen size is ignored and sized media goes full width. */
 .cm-live-image-frame {
   position: relative;
   width: fit-content;
   max-width: 100%;
   margin: 6px auto;
+}
+
+.cm-live-image-frame[data-sized] {
+  width: var(--media-w, 100%);
+}
+
+@media (max-width: 900px) {
+  .cm-live-image-frame[data-sized] {
+    width: 100%;
+  }
 }
 
 .cm-live-image-frame[data-sized] .cm-live-image {
@@ -973,6 +985,20 @@ textarea {
   margin: 6px auto;
   border-radius: 8px;
   border: 1px solid var(--line);
+}
+
+/* `![alt|60](url)` sized media: honor the chosen % on wide screens, but go
+ * full width once the day view collapses to the read/write toggle. */
+.md img[data-sized],
+.md video[data-sized] {
+  width: var(--media-w, 100%);
+}
+
+@media (max-width: 900px) {
+  .md img[data-sized],
+  .md video[data-sized] {
+    width: 100%;
+  }
 }
 
 .md blockquote {
