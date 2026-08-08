@@ -157,7 +157,7 @@ const toggleUnderline = (view: EditorView) => {
       }
     }
     if (span) {
-      const sFrom = span.index;
+      const sFrom = span.index ?? 0;
       const sTo = sFrom + span[0].length;
       const specs = [
         { from: sFrom, to: sFrom + open.length },
