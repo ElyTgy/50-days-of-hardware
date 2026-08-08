@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase, uploadImage } from "../lib/supabase";
+import { isHeic, supabase, uploadImage } from "../lib/supabase";
 import Markdown from "./Markdown";
 
 interface Props {
@@ -58,7 +58,7 @@ export default function EditableMarkdown({
   };
 
   const handleFiles = async (files: File[]) => {
-    const images = files.filter((f) => f.type.startsWith("image/"));
+    const images = files.filter((f) => f.type.startsWith("image/") || isHeic(f));
     if (images.length === 0) return;
     if (!supabase) {
       insertAtCursor("\n_(connect Supabase to upload images)_\n");
@@ -69,7 +69,8 @@ export default function EditableMarkdown({
       insertAtCursor(uploadingMark);
       try {
         const url = await uploadImage(file, imagePrefix);
-        setText((t) => t.replace(uploadingMark, `\n![](${url})\n`));
+        // "|60" = start at 60% width; resizable in the notes editor.
+        setText((t) => t.replace(uploadingMark, `\n![|60](${url})\n`));
       } catch {
         setText((t) => t.replace(uploadingMark, "\n_(image upload failed)_\n"));
       }
@@ -163,7 +164,7 @@ export default function EditableMarkdown({
           onKeyDown={handleKeyDown}
           onPaste={(e) => {
             const files = Array.from(e.clipboardData.files);
-            if (files.some((f) => f.type.startsWith("image/"))) {
+            if (files.some((f) => f.type.startsWith("image/") || isHeic(f))) {
               e.preventDefault();
               handleFiles(files);
             }

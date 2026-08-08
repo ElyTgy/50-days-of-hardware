@@ -817,12 +817,44 @@ textarea {
   text-underline-offset: 3px;
 }
 
+/* Images sit centered in a resizable frame; a trailing "|60" in the alt
+ * text (written by the corner drag handle) sets its width as a % of the
+ * editor, so the size stays proportional at any window width. */
+.cm-live-image-frame {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 6px auto;
+}
+
+.cm-live-image-frame[data-sized] .cm-live-image {
+  width: 100%;
+}
+
 .cm-live-image {
   display: block;
   max-width: 100%;
   border-radius: 8px;
   border: 1px solid var(--line);
-  margin: 6px 0;
+}
+
+.cm-live-image-handle {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  border: 2px solid var(--paper);
+  cursor: nwse-resize;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.cm-live-image-frame:hover .cm-live-image-handle {
+  opacity: 1;
 }
 
 .cm-live-hr {
@@ -908,7 +940,9 @@ textarea {
 }
 
 .md img {
+  display: block;
   max-width: 100%;
+  margin: 6px auto;
   border-radius: 8px;
   border: 1px solid var(--line);
 }

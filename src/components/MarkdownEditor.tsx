@@ -180,7 +180,8 @@ export default function MarkdownEditor({
         const range = insertAtCursor(marker);
         try {
           const url = await uploadImage(file, imagePrefix);
-          replaceIfUnchanged(range, marker, `\n![](${url})\n`);
+          // "|60" = start at 60% width; drag the corner handle to adjust.
+          replaceIfUnchanged(range, marker, `\n![|60](${url})\n`);
         } catch {
           replaceIfUnchanged(range, marker, "\n_(image upload failed)_\n");
         }

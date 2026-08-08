@@ -1,5 +1,6 @@
 import { syntaxTree } from "@codemirror/language";
 import { markdown } from "@codemirror/lang-markdown";
+import type { SyntaxNode } from "@lezer/common";
 import { GFM } from "@lezer/markdown";
 import { RangeSetBuilder } from "@codemirror/state";
 import {
@@ -19,6 +20,13 @@ import {
  * while your cursor is actually inside that span. Images render inline.
  */
 
+/** Trailing "|60" in an image's alt text sets its rendered width as a % of
+ *  the editor — `![|60](url)`. Written by the drag handle below, honored by
+ *  the read-only renderer too (see Markdown.tsx). */
+export const IMAGE_SIZE_RE = /\|(\d{1,3})$/;
+
+const clampPct = (n: number) => Math.min(100, Math.max(10, n));
+
 class ImageWidget extends WidgetType {
   private readonly url: string;
   private readonly alt: string;
@@ -31,16 +39,75 @@ class ImageWidget extends WidgetType {
   eq(other: ImageWidget) {
     return other.url === this.url && other.alt === this.alt;
   }
-  toDOM() {
+  toDOM(view: EditorView) {
+    const sized = IMAGE_SIZE_RE.exec(this.alt);
+    const pct = sized ? clampPct(Number(sized[1])) : null;
+
+    const frame = document.createElement("div");
+    frame.className = "cm-live-image-frame";
+    if (pct !== null) {
+      frame.style.width = `${pct}%`;
+      frame.dataset.sized = "";
+    }
+
     const img = document.createElement("img");
     img.src = this.url;
-    img.alt = this.alt;
+    img.alt = this.alt.replace(IMAGE_SIZE_RE, "");
     img.className = "cm-live-image";
-    return img;
+    frame.appendChild(img);
+
+    const handle = document.createElement("div");
+    handle.className = "cm-live-image-handle";
+    handle.title = "Drag to resize";
+    frame.appendChild(handle);
+
+    handle.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      handle.setPointerCapture(e.pointerId);
+      const editorWidth = view.contentDOM.clientWidth;
+      const startWidth = frame.getBoundingClientRect().width;
+      const startX = e.clientX;
+      let livePct = clampPct((startWidth / editorWidth) * 100);
+
+      const move = (ev: PointerEvent) => {
+        // The frame stays centered, so its width grows twice as fast as the
+        // corner being dragged moves.
+        const w = startWidth + (ev.clientX - startX) * 2;
+        livePct = clampPct((w / editorWidth) * 100);
+        frame.style.width = `${livePct}%`;
+        frame.dataset.sized = "";
+      };
+      const up = () => {
+        handle.removeEventListener("pointermove", move);
+        handle.removeEventListener("pointerup", up);
+        commitImageSize(view, frame, Math.round(livePct));
+      };
+      handle.addEventListener("pointermove", move);
+      handle.addEventListener("pointerup", up);
+    });
+
+    return frame;
   }
-  ignoreEvent() {
-    return false;
+  ignoreEvent(event: Event) {
+    // The resize handle owns its pointer events; clicks elsewhere still
+    // place the cursor as before.
+    return event.target instanceof Element && !!event.target.closest(".cm-live-image-handle");
   }
+}
+
+/** Rewrite the image's markdown so the chosen width persists in the text. */
+function commitImageSize(view: EditorView, dom: HTMLElement, pct: number) {
+  const pos = view.posAtDOM(dom);
+  let node: SyntaxNode | null = syntaxTree(view.state).resolveInner(pos, 1);
+  while (node && node.name !== "Image") node = node.parent;
+  if (!node) return;
+  const m = /^!\[([^\]]*)\]\((.*)\)$/.exec(view.state.sliceDoc(node.from, node.to));
+  if (!m) return;
+  const alt = m[1].replace(IMAGE_SIZE_RE, "");
+  view.dispatch({
+    changes: { from: node.from, to: node.to, insert: `![${alt}|${pct}](${m[2]})` },
+  });
 }
 
 class HrWidget extends WidgetType {
