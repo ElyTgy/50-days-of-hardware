@@ -615,7 +615,15 @@ textarea {
 
 @media (min-width: 901px) {
   .day-page {
-    max-width: none;
+    /* Let the split view use more of the screen on wide monitors instead of
+     * sitting inside the app-wide 1560px content cap — that cap left this
+     * page with huge, unbalanced outer margins. Never crowd closer than the
+     * shell's own 32px edge padding, so nothing changes at ordinary laptop
+     * widths. */
+    max-width: 1760px;
+    width: min(1760px, calc(100vw - 64px));
+    margin-left: 50%;
+    transform: translateX(-50%);
   }
 
   .day-view-tabs {
@@ -634,11 +642,16 @@ textarea {
   }
 
   .day-notes-resizer {
-    display: block;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
     flex: 0 0 auto;
     align-self: stretch;
-    width: 17px;
-    margin: 0 -8px;
+    /* Real breathing room around the divider, not just enough for a hit
+     * target — this was previously ~1px of visual gap (17px box pulled in
+     * by -8px margins on each side), which read as the two panels touching. */
+    width: 64px;
+    margin: 0;
     cursor: col-resize;
     position: relative;
     z-index: 1;
@@ -1009,6 +1022,9 @@ textarea {
 }
 
 .md table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
   border-collapse: collapse;
 }
 
@@ -1017,6 +1033,18 @@ textarea {
   border: 1px solid var(--line);
   padding: 6px 10px;
   text-align: left;
+}
+
+/* KaTeX display equations render with `white-space: nowrap` (see
+ * katex.min.css) — a wide equation would otherwise force the whole page to
+ * scroll horizontally on a narrow screen instead of just scrolling itself,
+ * the same failure mode an unbounded <pre> would have without .md pre's
+ * overflow-x below. */
+.md .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 4px 2px;
 }
 
 /* ---------- inline notes (Notion-style) ---------- */
