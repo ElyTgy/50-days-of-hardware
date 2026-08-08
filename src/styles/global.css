@@ -676,6 +676,11 @@ textarea {
     max-height: calc(100vh - 48px);
     overflow-y: auto;
     margin-right: -16px;
+    scrollbar-width: none;
+  }
+
+  .day-notes-panel::-webkit-scrollbar {
+    display: none;
   }
 
   /* Nothing written yet — don't reserve half the screen for it. Just
