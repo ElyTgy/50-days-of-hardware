@@ -71,8 +71,9 @@ export default function EditableMarkdown({
         const url = await uploadMedia(file, imagePrefix);
         // "|60" = start at 60% width; resizable in the notes editor.
         setText((t) => t.replace(uploadingMark, `\n![|60](${url})\n`));
-      } catch {
-        setText((t) => t.replace(uploadingMark, "\n_(upload failed)_\n"));
+      } catch (err) {
+        const why = err instanceof Error ? `: ${err.message}` : "";
+        setText((t) => t.replace(uploadingMark, `\n_(upload failed${why})_\n`));
       }
     }
   };

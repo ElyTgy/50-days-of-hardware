@@ -224,20 +224,24 @@ export default function MarkdownEditor({
 
     const insertAtCursor = (snippet: string) => {
       const view = viewRef.current;
-      if (!view) return { from: 0, to: 0 };
+      if (!view) return;
       const { from } = view.state.selection.main;
       view.dispatch({
         changes: { from, insert: snippet },
         selection: { anchor: from + snippet.length },
       });
-      return { from, to: from + snippet.length };
     };
 
-    const replaceIfUnchanged = (range: { from: number; to: number }, expect: string, next: string) => {
+    // Find the marker by its text at completion time rather than remembering
+    // where it was inserted: uploads take a while, and any typing above the
+    // marker (or an editor remount) shifts positions and would strand the
+    // "uploading…" placeholder forever.
+    const replaceMarker = (marker: string, next: string) => {
       const view = viewRef.current;
       if (!view) return;
-      if (view.state.sliceDoc(range.from, range.to) === expect) {
-        view.dispatch({ changes: { from: range.from, to: range.to, insert: next } });
+      const idx = view.state.doc.toString().indexOf(marker);
+      if (idx !== -1) {
+        view.dispatch({ changes: { from: idx, to: idx + marker.length, insert: next } });
       }
     };
 
@@ -250,13 +254,14 @@ export default function MarkdownEditor({
       }
       for (const file of media) {
         const marker = "\n![uploading…]()\n";
-        const range = insertAtCursor(marker);
+        insertAtCursor(marker);
         try {
           const url = await uploadMedia(file, imagePrefix);
           // "|60" = start at 60% width; drag the corner handle to adjust.
-          replaceIfUnchanged(range, marker, `\n![|60](${url})\n`);
-        } catch {
-          replaceIfUnchanged(range, marker, "\n_(upload failed)_\n");
+          replaceMarker(marker, `\n![|60](${url})\n`);
+        } catch (err) {
+          const why = err instanceof Error ? `: ${err.message}` : "";
+          replaceMarker(marker, `\n_(upload failed${why})_\n`);
         }
       }
     };

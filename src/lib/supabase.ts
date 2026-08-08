@@ -53,6 +53,14 @@ export async function uploadMedia(file: File, prefix: string): Promise<string> {
     : await toWebImage(file);
   const path = `${prefix}/${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, blob, { contentType });
-  if (error) throw error;
+  if (error) {
+    // The project's storage cap (50 MB by default) is the usual reason a
+    // video fails while images sail through — say so instead of a shrug.
+    throw new Error(
+      /exceeded the maximum allowed size/i.test(error.message)
+        ? `file is over the storage upload limit (${Math.round(blob.size / 1e6)} MB > 50 MB)`
+        : error.message,
+    );
+  }
   return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
 }
