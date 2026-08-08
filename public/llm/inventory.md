@@ -4,10 +4,22 @@
 
 ## Owned
 
+- **0.1 ohm shunt resistor** — needed for day(s) [31](https://hardware.ellietaghavi.com/llm/day-31.md) — [link](https://leeselectronic.com/en/product/90-90RESISTORS12W01OHMFUSIBLETVUSE.html)
+  Low-side current-sense shunt for the DIY diff-amp ammeter
+- **1N4148 (signal diode)** (min qty: 2) — needed for day(s) [6](https://hardware.ellietaghavi.com/llm/day-06.md), [11](https://hardware.ellietaghavi.com/llm/day-11.md), [18](https://hardware.ellietaghavi.com/llm/day-18.md), [29](https://hardware.ellietaghavi.com/llm/day-29.md) — [link](https://leeselectronic.com/en/product/7113-diode-fast-switching-1n4148-4pcs.html)
+  Flyback/clamp diode, IV-curve device, and charge-pump rectifier. The Day 18 doubler uses 2 at once and stays assembled through Day 29 — need at least 2 in hand simultaneously. Linked as a 4-pack in DO-35 (through-hole), not the single SMD SOD-123 unit.
+- **1N5819 (Schottky diode)** — needed for day(s) [11](https://hardware.ellietaghavi.com/llm/day-11.md) — [link](https://leeselectronic.com/en/product/71477-71477DIODESCHOTTKY1N581940V1A2PC.html)
+  Low-forward-drop diode compared against the 1N4148 on the IV curve
+- **1S LiPo battery (small)** — needed for day(s) [32](https://hardware.ellietaghavi.com/llm/day-32.md) — [link](https://leeselectronic.com/en/product/88340-battery-rechargeable-li-poly-37v-500mah.html)
+  Cell under test for charging profile and BMS discussion
 - **2N3904 (NPN BJT)** (min qty: 5) — needed for day(s) [12](https://hardware.ellietaghavi.com/llm/day-12.md), [13](https://hardware.ellietaghavi.com/llm/day-13.md) — [link](https://leeselectronic.com/en/product/7178-7178TRANSISTOR2N3904NPN5PCS.html)
   Small-signal NPN for beta measurement, common-emitter amp, and current mirror
 - **2N7000 (N-channel MOSFET)** — needed for day(s) [14](https://hardware.ellietaghavi.com/llm/day-14.md), [16](https://hardware.ellietaghavi.com/llm/day-16.md), [17](https://hardware.ellietaghavi.com/llm/day-17.md), [18](https://hardware.ellietaghavi.com/llm/day-18.md) — [link](https://leeselectronic.com/en/product/71801-71801PWRMOSFETNFET2N7000TO925PCS.html)
   Small-signal NMOS for Vth tracing, source follower, and CMOS inverter
+- **5.1 V Zener diode (1N4733A)** — needed for day(s) [18](https://hardware.ellietaghavi.com/llm/day-18.md), [26](https://hardware.ellietaghavi.com/llm/day-26.md) — [link](https://leeselectronic.com/en/product/765-765DIODE1N4733AZENERDIODE51V2PCS.html)
+  Voltage reference for the discrete LDO error amp
+- **Buck converter module (cheap)** — needed for day(s) [28](https://hardware.ellietaghavi.com/llm/day-28.md) — [link](https://leeselectronic.com/en/product/714625.html)
+  Real switching regulator to measure efficiency and switch-node ringing
 - **CD4001 (quad NOR gate)** — needed for day(s) [10](https://hardware.ellietaghavi.com/llm/day-10.md) — [link](https://leeselectronic.com/en/product/7188-7188iccmos4001quad2inputnorgate.html)
   Logic gate that turns an RC oscillator into a gated / enable-able oscillator
 - **CD4007 (CMOS transistor array)** — needed for day(s) [17](https://hardware.ellietaghavi.com/llm/day-17.md), [26](https://hardware.ellietaghavi.com/llm/day-26.md) — [link](https://leeselectronic.com/en/product/7191-7191iccmos4007dualcomplementaryp.html)
@@ -18,25 +30,6 @@
   Phase-locked loop IC (phase detector + VCO) to demonstrate lock and capture range
 - **Copper foil tape** — needed for day(s) [1](https://hardware.ellietaghavi.com/llm/day-01.md), [3](https://hardware.ellietaghavi.com/llm/day-03.md), [40](https://hardware.ellietaghavi.com/llm/day-40.md) — [link](https://leeselectronic.com/en/product/41714-copper-tape-10mm.html)
   Forms the capacitive touch pad electrode and improvised copper ground/match surfaces
-- **Multimeter (2nd unit)** — needed for day(s) [28](https://hardware.ellietaghavi.com/llm/day-28.md)
-  Day 28 measures current and voltage on a buck converter simultaneously — needs two multimeters in hand at the same time. Not otherwise on this list since one is assumed already owned as bench equipment; add a second if you only have one.
-- **STM32 (or Arduino) MCU dev board** — needed for day(s) [2](https://hardware.ellietaghavi.com/llm/day-02.md), [3](https://hardware.ellietaghavi.com/llm/day-03.md), [6](https://hardware.ellietaghavi.com/llm/day-06.md), [8](https://hardware.ellietaghavi.com/llm/day-08.md), [23](https://hardware.ellietaghavi.com/llm/day-23.md), [34](https://hardware.ellietaghavi.com/llm/day-34.md), 48, 49, 50
-  Microcontroller for charge-transfer sensing firmware, PWM drive, ADC/DMA, UART and serial logging
-
-## Incoming (ordered, not yet received)
-
-- **0.1 ohm shunt resistor** — needed for day(s) [31](https://hardware.ellietaghavi.com/llm/day-31.md) — [link](https://leeselectronic.com/en/product/90-90RESISTORS12W01OHMFUSIBLETVUSE.html)
-  Low-side current-sense shunt for the DIY diff-amp ammeter
-- **1N4148 (signal diode)** (min qty: 2) — needed for day(s) [6](https://hardware.ellietaghavi.com/llm/day-06.md), [11](https://hardware.ellietaghavi.com/llm/day-11.md), [18](https://hardware.ellietaghavi.com/llm/day-18.md), [29](https://hardware.ellietaghavi.com/llm/day-29.md) — [link](https://leeselectronic.com/en/product/7113-diode-fast-switching-1n4148-4pcs.html)
-  Flyback/clamp diode, IV-curve device, and charge-pump rectifier. The Day 18 doubler uses 2 at once and stays assembled through Day 29 — need at least 2 in hand simultaneously. Linked as a 4-pack in DO-35 (through-hole), not the single SMD SOD-123 unit.
-- **1N5819 (Schottky diode)** — needed for day(s) [11](https://hardware.ellietaghavi.com/llm/day-11.md) — [link](https://leeselectronic.com/en/product/71477-71477DIODESCHOTTKY1N581940V1A2PC.html)
-  Low-forward-drop diode compared against the 1N4148 on the IV curve
-- **1S LiPo battery (small)** — needed for day(s) [32](https://hardware.ellietaghavi.com/llm/day-32.md) — [link](https://leeselectronic.com/en/product/88340-battery-rechargeable-li-poly-37v-500mah.html)
-  Cell under test for charging profile and BMS discussion
-- **5.1 V Zener diode (1N4733A)** — needed for day(s) [18](https://hardware.ellietaghavi.com/llm/day-18.md), [26](https://hardware.ellietaghavi.com/llm/day-26.md) — [link](https://leeselectronic.com/en/product/765-765DIODE1N4733AZENERDIODE51V2PCS.html)
-  Voltage reference for the discrete LDO error amp
-- **Buck converter module (cheap)** — needed for day(s) [28](https://hardware.ellietaghavi.com/llm/day-28.md) — [link](https://leeselectronic.com/en/product/714625.html)
-  Real switching regulator to measure efficiency and switch-node ringing
 - **Electrolytic capacitor 100uF (5-pack)** — needed for day(s) general stock — [link](https://leeselectronic.com/en/product/81040-81040ELECTROLYTICCAP35V100UF5PCS.html)
   General-purpose electrolytic capacitor stock for RC timing, filtering, and decoupling exercises
 - **Electrolytic capacitor 10uF (5-pack)** — needed for day(s) general stock — [link](https://leeselectronic.com/en/product/8638-8638ELECTROLYTICCAP16V10UF10PCSP.html)
@@ -53,6 +46,8 @@
   Dual full-bridge driver for forward / reverse / coast / brake; BJT-based (~2V drop) vs DRV8833's MOSFETs
 - **LM358 (op-amp)** — needed for day(s) [9](https://hardware.ellietaghavi.com/llm/day-09.md), [20](https://hardware.ellietaghavi.com/llm/day-20.md), [22](https://hardware.ellietaghavi.com/llm/day-22.md), [26](https://hardware.ellietaghavi.com/llm/day-26.md), [31](https://hardware.ellietaghavi.com/llm/day-31.md) — [link](https://leeselectronic.com/en/product/7310-7310ICLM358NLOWPOWERDUALOPAMP.html)
   General-purpose op-amp for buffers, Schmitt trigger, LDO error amp, and diff-amp shunt sensing
+- **Multimeter (2nd unit)** — needed for day(s) [28](https://hardware.ellietaghavi.com/llm/day-28.md)
+  Day 28 measures current and voltage on a buck converter simultaneously — needs two multimeters in hand at the same time. Not otherwise on this list since one is assumed already owned as bench equipment; add a second if you only have one.
 - **Passives assortment (resistors + capacitors)** — needed for day(s) [4](https://hardware.ellietaghavi.com/llm/day-04.md), [8](https://hardware.ellietaghavi.com/llm/day-08.md), [9](https://hardware.ellietaghavi.com/llm/day-09.md), [13](https://hardware.ellietaghavi.com/llm/day-13.md), [19](https://hardware.ellietaghavi.com/llm/day-19.md), [20](https://hardware.ellietaghavi.com/llm/day-20.md), [21](https://hardware.ellietaghavi.com/llm/day-21.md), [22](https://hardware.ellietaghavi.com/llm/day-22.md) — [link](https://leeselectronic.com/en/product/44240-resistor-kit-1-4w-1280pcs-64-values-1r-10m-ohm-1.html)
   General RC network elements for filters, timing, biasing, gain-setting, and sense resistors (e.g. 10k, 100R, 1uF, 10nF, 4.7k, 470R, 47k, 100k)
 - **Potentiometer (10k linear)** — needed for day(s) [14](https://hardware.ellietaghavi.com/llm/day-14.md) — [link](https://leeselectronic.com/en/product/71591-potentiometer-10kb.html)
@@ -61,12 +56,18 @@
   Transmission line for reflection/TDR bounce and stub measurements
 - **Small DC motor** — needed for day(s) [30](https://hardware.ellietaghavi.com/llm/day-30.md), [31](https://hardware.ellietaghavi.com/llm/day-31.md) — [link](https://leeselectronic.com/en/product/4546-dc-motor-310-3-6v-03a-056a-3500rpm-6800rpm-l-10mm-shaft.html)
   Load for the H-bridge and current-sensing exercises
+- **STM32 (or Arduino) MCU dev board** — needed for day(s) [2](https://hardware.ellietaghavi.com/llm/day-02.md), [3](https://hardware.ellietaghavi.com/llm/day-03.md), [6](https://hardware.ellietaghavi.com/llm/day-06.md), [8](https://hardware.ellietaghavi.com/llm/day-08.md), [23](https://hardware.ellietaghavi.com/llm/day-23.md), [34](https://hardware.ellietaghavi.com/llm/day-34.md), 48, 49, 50
+  Microcontroller for charge-transfer sensing firmware, PWM drive, ADC/DMA, UART and serial logging
 - **TIP32C (PNP pass transistor)** — needed for day(s) [26](https://hardware.ellietaghavi.com/llm/day-26.md) — [link](https://leeselectronic.com/en/product/7575-7575ICTIP32CTRANSISTORPNP100V3A.html)
   PNP pass transistor for the discrete LDO build (error amp + Zener reference + feedback divider)
 - **TL072 (FET-input op-amp)** — needed for day(s) [19](https://hardware.ellietaghavi.com/llm/day-19.md), [20](https://hardware.ellietaghavi.com/llm/day-20.md), [21](https://hardware.ellietaghavi.com/llm/day-21.md), [24](https://hardware.ellietaghavi.com/llm/day-24.md) — [link](https://leeselectronic.com/en/product/7289-7289ICTL072OPERATIONAMP.html)
   Higher-performance op-amp for inverting/non-inverting amps and integrator
 - **TP4056 charging module** — needed for day(s) [32](https://hardware.ellietaghavi.com/llm/day-32.md) — [link](https://leeselectronic.com/en/product/15881-tp4056-charger-module-1a-5v-usb-input.html)
   1S Li-ion/LiPo CC/CV charger to observe the charge phases
+
+## Incoming (ordered, not yet received)
+
+_None._
 
 ## Not yet ordered
 
