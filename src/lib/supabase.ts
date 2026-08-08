@@ -12,7 +12,8 @@ export const supabase: SupabaseClient | null =
 
 export const isSupabaseConfigured = supabase !== null;
 
-const IMAGE_BUCKET = "images";
+// Videos share the bucket; it kept its original name to avoid a migration.
+const MEDIA_BUCKET = "images";
 
 /** iPhone photos arrive as HEIC, which Chrome/Firefox can't decode — an
  *  <img> pointing at one collapses to nothing. Detect by type or extension
@@ -33,12 +34,25 @@ async function toWebImage(file: File): Promise<{ blob: Blob; ext: string; conten
   return { blob: file, ext, contentType: file.type || "image/png" };
 }
 
-/** Upload a pasted/dropped image and return a public URL for markdown embedding. */
-export async function uploadImage(file: File, prefix: string): Promise<string> {
+/** Video formats browsers can play natively; detected by type or extension
+ *  (the type is sometimes empty on drag-and-drop). */
+export function isVideo(file: File): boolean {
+  return file.type.startsWith("video/") || /\.(mp4|webm|mov|m4v|ogv)$/i.test(file.name);
+}
+
+/** Upload a pasted/dropped image or video and return a public URL for
+ *  markdown embedding. Videos upload as-is; images convert if needed. */
+export async function uploadMedia(file: File, prefix: string): Promise<string> {
   if (!supabase) throw new Error("Supabase is not configured");
-  const { blob, ext, contentType } = await toWebImage(file);
+  const { blob, ext, contentType } = isVideo(file)
+    ? {
+        blob: file as Blob,
+        ext: file.name.split(".").pop()?.toLowerCase() || "mp4",
+        contentType: file.type || "video/mp4",
+      }
+    : await toWebImage(file);
   const path = `${prefix}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from(IMAGE_BUCKET).upload(path, blob, { contentType });
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, blob, { contentType });
   if (error) throw error;
-  return supabase.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl;
+  return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
 }

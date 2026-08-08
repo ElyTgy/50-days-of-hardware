@@ -26,6 +26,11 @@ import {
  *  the read-only renderer too (see Markdown.tsx). */
 export const IMAGE_SIZE_RE = /\|(\d{1,3})$/;
 
+/** Markdown has no video syntax, so `![…](url)` pointing at a video file
+ *  renders as a <video> player instead of an <img> — matched by extension
+ *  here and in the read-only renderer (Markdown.tsx). */
+export const VIDEO_URL_RE = /\.(mp4|webm|mov|m4v|ogv)([?#].*)?$/i;
+
 const clampPct = (n: number) => Math.min(100, Math.max(10, n));
 
 class ImageWidget extends WidgetType {
@@ -51,11 +56,21 @@ class ImageWidget extends WidgetType {
       frame.dataset.sized = "";
     }
 
-    const img = document.createElement("img");
-    img.src = this.url;
-    img.alt = this.alt.replace(IMAGE_SIZE_RE, "");
-    img.className = "cm-live-image";
-    frame.appendChild(img);
+    let media: HTMLImageElement | HTMLVideoElement;
+    if (VIDEO_URL_RE.test(this.url)) {
+      const video = document.createElement("video");
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      media = video;
+    } else {
+      const img = document.createElement("img");
+      img.alt = this.alt.replace(IMAGE_SIZE_RE, "");
+      media = img;
+    }
+    media.src = this.url;
+    media.className = "cm-live-image";
+    frame.appendChild(media);
 
     const handle = document.createElement("div");
     handle.className = "cm-live-image-handle";
@@ -91,9 +106,12 @@ class ImageWidget extends WidgetType {
     return frame;
   }
   ignoreEvent(event: Event) {
-    // The resize handle owns its pointer events; clicks elsewhere still
-    // place the cursor as before.
-    return event.target instanceof Element && !!event.target.closest(".cm-live-image-handle");
+    // The resize handle owns its pointer events, and clicks on a video must
+    // reach its playback controls; clicks elsewhere still place the cursor.
+    return (
+      event.target instanceof Element &&
+      !!event.target.closest(".cm-live-image-handle, video.cm-live-image")
+    );
   }
 }
 

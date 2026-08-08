@@ -11,7 +11,7 @@ import { indentUnit, syntaxTree } from "@codemirror/language";
 import type { SyntaxNode } from "@lezer/common";
 import { dropCursor, EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
 import { liveMarkdown, UNDERLINE_RE } from "../lib/liveMarkdown";
-import { isHeic, supabase, uploadImage } from "../lib/supabase";
+import { isHeic, isVideo, supabase, uploadMedia } from "../lib/supabase";
 
 const INDENT = "    ";
 
@@ -242,21 +242,21 @@ export default function MarkdownEditor({
     };
 
     const handleFiles = async (files: File[]) => {
-      const images = files.filter((f) => f.type.startsWith("image/") || isHeic(f));
-      if (images.length === 0) return;
+      const media = files.filter((f) => f.type.startsWith("image/") || isHeic(f) || isVideo(f));
+      if (media.length === 0) return;
       if (!supabase) {
-        insertAtCursor("\n_(connect Supabase to upload images)_\n");
+        insertAtCursor("\n_(connect Supabase to upload media)_\n");
         return;
       }
-      for (const file of images) {
+      for (const file of media) {
         const marker = "\n![uploading…]()\n";
         const range = insertAtCursor(marker);
         try {
-          const url = await uploadImage(file, imagePrefix);
+          const url = await uploadMedia(file, imagePrefix);
           // "|60" = start at 60% width; drag the corner handle to adjust.
           replaceIfUnchanged(range, marker, `\n![|60](${url})\n`);
         } catch {
-          replaceIfUnchanged(range, marker, "\n_(image upload failed)_\n");
+          replaceIfUnchanged(range, marker, "\n_(upload failed)_\n");
         }
       }
     };
@@ -277,7 +277,7 @@ export default function MarkdownEditor({
           EditorView.domEventHandlers({
             paste(event) {
               const files = Array.from(event.clipboardData?.files ?? []);
-              if (files.some((f) => f.type.startsWith("image/") || isHeic(f))) {
+              if (files.some((f) => f.type.startsWith("image/") || isHeic(f) || isVideo(f))) {
                 event.preventDefault();
                 handleFiles(files);
                 return true;
