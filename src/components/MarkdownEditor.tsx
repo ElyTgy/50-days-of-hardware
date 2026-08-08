@@ -1,9 +1,80 @@
 import { useEffect, useRef } from "react";
-import { EditorState } from "@codemirror/state";
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { EditorSelection, EditorState } from "@codemirror/state";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  indentLess,
+  indentMore,
+} from "@codemirror/commands";
+import { indentUnit } from "@codemirror/language";
 import { dropCursor, EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
 import { liveMarkdown } from "../lib/liveMarkdown";
 import { isHeic, supabase, uploadImage } from "../lib/supabase";
+
+const INDENT = "    ";
+
+/** Tab inserts four spaces at the cursor; with a selection it indents the
+ *  selected lines instead (Shift-Tab un-indents either way). */
+const insertIndent = (view: EditorView) => {
+  const { state } = view;
+  if (state.selection.ranges.some((r) => !r.empty)) return indentMore(view);
+  view.dispatch(state.replaceSelection(INDENT), {
+    scrollIntoView: true,
+    userEvent: "input",
+  });
+  return true;
+};
+
+/** Toggle a markdown wrapper (** or *) around each selection range. With no
+ *  selection, inserts the pair and leaves the cursor between the markers. */
+const toggleWrap = (marker: string) => (view: EditorView) => {
+  const { state } = view;
+  const len = marker.length;
+  const tr = state.changeByRange((range) => {
+    const { from, to } = range;
+    const selected = state.sliceDoc(from, to);
+    // Selection includes the markers -> strip them.
+    if (selected.startsWith(marker) && selected.endsWith(marker) && selected.length >= 2 * len) {
+      return {
+        changes: [
+          { from, to: from + len },
+          { from: to - len, to },
+        ],
+        range: EditorSelection.range(from, to - 2 * len),
+      };
+    }
+    // Markers sit just outside the selection/cursor -> strip them.
+    if (
+      from >= len &&
+      state.sliceDoc(from - len, from) === marker &&
+      state.sliceDoc(to, to + len) === marker
+    ) {
+      return {
+        changes: [
+          { from: from - len, to: from },
+          { from: to, to: to + len },
+        ],
+        range: EditorSelection.range(from - len, to - len),
+      };
+    }
+    return {
+      changes: [
+        { from, insert: marker },
+        { from: to, insert: marker },
+      ],
+      range: EditorSelection.range(from + len, to + len),
+    };
+  });
+  view.dispatch(tr, { scrollIntoView: true, userEvent: "input" });
+  return true;
+};
+
+const markdownKeymap = [
+  { key: "Tab", run: insertIndent, shift: indentLess },
+  { key: "Mod-b", run: toggleWrap("**") },
+  { key: "Mod-i", run: toggleWrap("*") },
+];
 
 interface Props {
   value: string;
@@ -83,7 +154,8 @@ export default function MarkdownEditor({
         extensions: [
           history(),
           dropCursor(),
-          keymap.of([...defaultKeymap, ...historyKeymap]),
+          indentUnit.of(INDENT),
+          keymap.of([...markdownKeymap, ...defaultKeymap, ...historyKeymap]),
           liveMarkdown(),
           ...(placeholderText ? [placeholderExt(placeholderText)] : []),
           EditorView.updateListener.of((update) => {

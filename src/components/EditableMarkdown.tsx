@@ -81,6 +81,53 @@ export default function EditableMarkdown({
     if (text !== value) onSave(text);
   };
 
+  // Same editing shortcuts as the CodeMirror notes editor: Tab inserts four
+  // spaces (Shift-Tab un-indents the line), Cmd/Ctrl+B and +I toggle
+  // bold/italic. execCommand keeps the native undo stack working and fires
+  // the input event React's onChange already listens to.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    const { value: v, selectionStart: start, selectionEnd: end } = el;
+
+    const exec = (from: number, to: number, insert: string, selFrom: number, selTo: number) => {
+      e.preventDefault();
+      el.setSelectionRange(from, to);
+      document.execCommand(insert ? "insertText" : "delete", false, insert || undefined);
+      el.setSelectionRange(selFrom, selTo);
+      setText(el.value);
+      grow();
+    };
+
+    if (e.key === "Tab" && !e.shiftKey) {
+      exec(start, end, "    ", start + 4, start + 4);
+    } else if (e.key === "Tab" && e.shiftKey) {
+      const lineStart = v.lastIndexOf("\n", start - 1) + 1;
+      const dedent = /^( {1,4}|\t)/.exec(v.slice(lineStart))?.[0].length ?? 0;
+      if (dedent > 0) {
+        exec(
+          lineStart,
+          lineStart + dedent,
+          "",
+          Math.max(lineStart, start - dedent),
+          Math.max(lineStart, end - dedent),
+        );
+      } else {
+        e.preventDefault();
+      }
+    } else if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === "b" || e.key === "i")) {
+      const marker = e.key === "b" ? "**" : "*";
+      const len = marker.length;
+      const sel = v.slice(start, end);
+      if (sel.startsWith(marker) && sel.endsWith(marker) && sel.length >= 2 * len) {
+        exec(start, end, sel.slice(len, -len), start, end - 2 * len);
+      } else if (start >= len && v.slice(start - len, start) === marker && v.slice(end, end + len) === marker) {
+        exec(start - len, end + len, sel, start - len, end - len);
+      } else {
+        exec(start, end, marker + sel + marker, start + len, end + len);
+      }
+    }
+  };
+
   if (editing) {
     return (
       <div className="note">
@@ -94,6 +141,7 @@ export default function EditableMarkdown({
             grow();
           }}
           onBlur={finishEditing}
+          onKeyDown={handleKeyDown}
           onPaste={(e) => {
             const files = Array.from(e.clipboardData.files);
             if (files.some((f) => f.type.startsWith("image/"))) {
