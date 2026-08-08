@@ -663,6 +663,10 @@ textarea {
     background: var(--ink-faint);
   }
 
+  /* Bleed into the shell's right gutter by the same amount as the editor's
+   * own side padding: the text stays aligned with the shell content, but
+   * the breathing room moves inside the panel instead of the writing
+   * clipping against its right edge. */
   .day-notes-panel {
     display: block !important;
     flex: 0 0 auto;
@@ -671,6 +675,7 @@ textarea {
     top: 24px;
     max-height: calc(100vh - 48px);
     overflow-y: auto;
+    margin-right: -16px;
   }
 
   /* Nothing written yet — don't reserve half the screen for it. Just
@@ -682,6 +687,7 @@ textarea {
     max-height: none;
     overflow: visible;
     padding-top: 2px;
+    margin-right: 0;
   }
 }
 
@@ -707,6 +713,7 @@ textarea {
 @media (min-width: 901px) {
   .day-notes {
     min-height: calc(100vh - 96px);
+    padding: 8px 16px 24px;
   }
 }
 
