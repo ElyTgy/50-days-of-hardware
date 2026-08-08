@@ -3,7 +3,7 @@ import { EditorState } from "@codemirror/state";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { dropCursor, EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
 import { liveMarkdown } from "../lib/liveMarkdown";
-import { supabase, uploadImage } from "../lib/supabase";
+import { isHeic, supabase, uploadImage } from "../lib/supabase";
 
 interface Props {
   value: string;
@@ -59,7 +59,7 @@ export default function MarkdownEditor({
     };
 
     const handleFiles = async (files: File[]) => {
-      const images = files.filter((f) => f.type.startsWith("image/"));
+      const images = files.filter((f) => f.type.startsWith("image/") || isHeic(f));
       if (images.length === 0) return;
       if (!supabase) {
         insertAtCursor("\n_(connect Supabase to upload images)_\n");
@@ -92,7 +92,7 @@ export default function MarkdownEditor({
           EditorView.domEventHandlers({
             paste(event) {
               const files = Array.from(event.clipboardData?.files ?? []);
-              if (files.some((f) => f.type.startsWith("image/"))) {
+              if (files.some((f) => f.type.startsWith("image/") || isHeic(f))) {
                 event.preventDefault();
                 handleFiles(files);
                 return true;
