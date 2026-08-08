@@ -10,7 +10,7 @@ import {
 import { indentUnit, syntaxTree } from "@codemirror/language";
 import type { SyntaxNode } from "@lezer/common";
 import { dropCursor, EditorView, keymap, placeholder as placeholderExt } from "@codemirror/view";
-import { liveMarkdown } from "../lib/liveMarkdown";
+import { liveMarkdown, UNDERLINE_RE } from "../lib/liveMarkdown";
 import { isHeic, supabase, uploadImage } from "../lib/supabase";
 
 const INDENT = "    ";
@@ -109,10 +109,83 @@ const toggleWrap = (marker: string) => (view: EditorView) => {
   return true;
 };
 
+/** Toggle <u>…</u> around each selection range. Markdown has no underline
+ *  syntax, so unlike toggleWrap this deals in asymmetric HTML tags and finds
+ *  enclosing spans by regex (the parser only sees the tags as inline HTML). */
+const toggleUnderline = (view: EditorView) => {
+  const open = "<u>";
+  const close = "</u>";
+  const { state } = view;
+  const tr = state.changeByRange((range) => {
+    const { from, to } = range;
+    const selected = state.sliceDoc(from, to);
+    // Selection includes the tags -> strip them.
+    if (
+      selected.startsWith(open) &&
+      selected.endsWith(close) &&
+      selected.length >= open.length + close.length
+    ) {
+      return {
+        changes: [
+          { from, to: from + open.length },
+          { from: to - close.length, to },
+        ],
+        range: EditorSelection.range(from, to - open.length - close.length),
+      };
+    }
+    // Tags sit just outside the selection/cursor -> strip them.
+    if (
+      from >= open.length &&
+      state.sliceDoc(from - open.length, from) === open &&
+      state.sliceDoc(to, to + close.length) === close
+    ) {
+      return {
+        changes: [
+          { from: from - open.length, to: from },
+          { from: to, to: to + close.length },
+        ],
+        range: EditorSelection.range(from - open.length, to - open.length),
+      };
+    }
+    // Cursor or selection sits inside an existing span -> strip its tags.
+    let span: RegExpMatchArray | null = null;
+    for (const m of state.doc.toString().matchAll(UNDERLINE_RE)) {
+      if (m.index > from) break;
+      if (to <= m.index + m[0].length) {
+        span = m;
+        break;
+      }
+    }
+    if (span) {
+      const sFrom = span.index;
+      const sTo = sFrom + span[0].length;
+      const specs = [
+        { from: sFrom, to: sFrom + open.length },
+        { from: sTo - close.length, to: sTo },
+      ];
+      const map = state.changes(specs);
+      return {
+        changes: specs,
+        range: EditorSelection.range(map.mapPos(range.anchor), map.mapPos(range.head)),
+      };
+    }
+    return {
+      changes: [
+        { from, insert: open },
+        { from: to, insert: close },
+      ],
+      range: EditorSelection.range(from + open.length, to + open.length),
+    };
+  });
+  view.dispatch(tr, { scrollIntoView: true, userEvent: "input" });
+  return true;
+};
+
 const markdownKeymap = [
   { key: "Tab", run: insertIndent, shift: indentLess },
   { key: "Mod-b", run: toggleWrap("**") },
   { key: "Mod-i", run: toggleWrap("*") },
+  { key: "Mod-u", run: toggleUnderline },
 ];
 
 interface Props {

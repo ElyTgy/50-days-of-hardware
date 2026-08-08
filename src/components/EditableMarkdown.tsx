@@ -83,9 +83,9 @@ export default function EditableMarkdown({
   };
 
   // Same editing shortcuts as the CodeMirror notes editor: Tab inserts four
-  // spaces (Shift-Tab un-indents the line), Cmd/Ctrl+B and +I toggle
-  // bold/italic. execCommand keeps the native undo stack working and fires
-  // the input event React's onChange already listens to.
+  // spaces (Shift-Tab un-indents the line), Cmd/Ctrl+B, +I and +U toggle
+  // bold/italic/underline. execCommand keeps the native undo stack working
+  // and fires the input event React's onChange already listens to.
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const el = e.currentTarget;
     const { value: v, selectionStart: start, selectionEnd: end } = el;
@@ -115,19 +115,31 @@ export default function EditableMarkdown({
       } else {
         e.preventDefault();
       }
-    } else if ((e.metaKey || e.ctrlKey) && !e.altKey && (e.key === "b" || e.key === "i")) {
-      const marker = e.key === "b" ? "**" : "*";
-      const len = marker.length;
+    } else if (
+      (e.metaKey || e.ctrlKey) &&
+      !e.altKey &&
+      (e.key === "b" || e.key === "i" || e.key === "u")
+    ) {
+      // Underline has no markdown syntax, so Cmd/Ctrl+U wraps in literal
+      // <u>…</u> tags (rendered by rehype-raw in the read-only view).
+      const [open, close] =
+        e.key === "b" ? ["**", "**"] : e.key === "i" ? ["*", "*"] : ["<u>", "</u>"];
+      const oLen = open.length;
+      const cLen = close.length;
       const sel = v.slice(start, end);
-      if (sel.startsWith(marker) && sel.endsWith(marker) && sel.length >= 2 * len) {
-        exec(start, end, sel.slice(len, -len), start, end - 2 * len);
-      } else if (start >= len && v.slice(start - len, start) === marker && v.slice(end, end + len) === marker) {
-        exec(start - len, end + len, sel, start - len, end - len);
+      if (sel.startsWith(open) && sel.endsWith(close) && sel.length >= oLen + cLen) {
+        exec(start, end, sel.slice(oLen, -cLen), start, end - oLen - cLen);
+      } else if (start >= oLen && v.slice(start - oLen, start) === open && v.slice(end, end + cLen) === close) {
+        exec(start - oLen, end + cLen, sel, start - oLen, end - oLen);
       } else {
-        // Cursor/selection inside an existing **bold** or *italic* span ->
+        // Cursor/selection inside an existing bold/italic/underline span ->
         // strip that span's markers instead of nesting a new pair.
         const spanRe =
-          len === 2 ? /\*\*([^\n*][^\n]*?)\*\*/g : /(?<!\*)\*([^\n*][^\n]*?)\*(?!\*)/g;
+          e.key === "b"
+            ? /\*\*([^\n*][^\n]*?)\*\*/g
+            : e.key === "i"
+              ? /(?<!\*)\*([^\n*][^\n]*?)\*(?!\*)/g
+              : /<u>([^\n]*?)<\/u>/g;
         let span: RegExpExecArray | null = null;
         for (let m = spanRe.exec(v); m; m = spanRe.exec(v)) {
           if (m.index > start) break;
@@ -139,10 +151,10 @@ export default function EditableMarkdown({
         if (span) {
           const sFrom = span.index;
           const sTo = sFrom + span[0].length;
-          const clamp = (p: number) => Math.min(Math.max(p - len, sFrom), sTo - 2 * len);
+          const clamp = (p: number) => Math.min(Math.max(p - oLen, sFrom), sTo - oLen - cLen);
           exec(sFrom, sTo, span[1], clamp(start), clamp(end));
         } else {
-          exec(start, end, marker + sel + marker, start + len, end + len);
+          exec(start, end, open + sel + close, start + oLen, end + oLen);
         }
       }
     }

@@ -165,6 +165,11 @@ const CODE_MARK_RE = /^`+/;
 // with whitespace (so "$5 and $10" stays plain text) — remark-math's rules.
 const BLOCK_MATH_RE = /\$\$([^$]+?)\$\$/g;
 const INLINE_MATH_RE = /\$([^$\n]+?)\$/g;
+// Markdown has no underline syntax, so Cmd/Ctrl+U writes literal <u>…</u>
+// tags — the read-only renderer passes them through via rehype-raw.
+export const UNDERLINE_RE = /<u>([^\n]*?)<\/u>/g;
+const U_OPEN = "<u>".length;
+const U_CLOSE = "</u>".length;
 
 function buildDecorations(view: EditorView): DecorationSet {
   const { state } = view;
@@ -339,6 +344,25 @@ function buildDecorations(view: EditorView): DecorationSet {
         to: mTo,
         deco: Decoration.replace({ widget: new MathWidget(tex, false) }),
       });
+    }
+
+    // <u>…</u> is invisible to the markdown parser too (it only sees the
+    // tags as inline HTML), so scan for it the same way.
+    for (const m of text.matchAll(UNDERLINE_RE)) {
+      const mFrom = from + m.index;
+      const mTo = mFrom + m[0].length;
+      if (overlapsCode(mFrom, mTo)) continue;
+      if (mathRanges.some((r) => mFrom < r.to && mTo > r.from)) continue;
+      if (m[1].length > 0) {
+        pending.push({
+          from: mFrom + U_OPEN,
+          to: mTo - U_CLOSE,
+          deco: Decoration.mark({ class: "cm-live-underline" }),
+        });
+      }
+      if (selectionTouches(state, mFrom, mTo)) continue;
+      pending.push({ from: mFrom, to: mFrom + U_OPEN, deco: Decoration.replace({}) });
+      pending.push({ from: mTo - U_CLOSE, to: mTo, deco: Decoration.replace({}) });
     }
   }
 
