@@ -13,8 +13,8 @@ export const blocks: Block[] = [
 
 export const blockById = (id: number): Block => blocks[id];
 
-/** Challenge starts Wed Aug 5, 2026 — day 1. */
-export const CHALLENGE_START = new Date(2026, 7, 5);
+/** Challenge starts Fri Aug 7, 2026 — day 1. */
+export const CHALLENGE_START = new Date(2026, 7, 7);
 
 export const dateForDay = (day: number): Date => {
   const d = new Date(CHALLENGE_START);
