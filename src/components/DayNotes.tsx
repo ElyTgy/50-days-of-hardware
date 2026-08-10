@@ -2,6 +2,7 @@ import { useCallback, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../lib/auth";
 import { NOTES_SECTION } from "../lib/dayNotes";
+import { formatDate } from "../data/blocks";
 import Markdown from "./Markdown";
 import MarkdownEditor from "./MarkdownEditor";
 
@@ -12,6 +13,8 @@ interface Props {
   /** content already fetched by the caller (DayPage decides whether this
    *  component mounts at all, so it always starts with a known value) */
   initialContent: string;
+  /** when the note was last saved, or null for a note that doesn't exist yet */
+  writtenAt?: string | null;
   autoFocus?: boolean;
 }
 
@@ -22,11 +25,13 @@ interface Props {
  * Only ever mounted once there's something to show or the owner has chosen
  * to start writing — see DayPage.
  */
-export default function DayNotes({ dayId, initialContent, autoFocus }: Props) {
+export default function DayNotes({ dayId, initialContent, writtenAt, autoFocus }: Props) {
   const { canEdit } = useAuth();
   const [text, setText] = useState(initialContent);
   const [status, setStatus] = useState<Status>("idle");
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const written = writtenAt ? `written ${formatDate(new Date(writtenAt))}` : "";
 
   const save = useCallback(
     async (content: string) => {
@@ -59,7 +64,10 @@ export default function DayNotes({ dayId, initialContent, autoFocus }: Props) {
   if (!canEdit) {
     return (
       <div className="day-notes">
-        <h2 className="day-notes-title">Notes</h2>
+        <div className="day-notes-head">
+          <h2 className="day-notes-title">Notes</h2>
+          {written && <span className="day-notes-status">{written}</span>}
+        </div>
         <div className="day-notes-render">
           <Markdown>{text}</Markdown>
         </div>
@@ -76,7 +84,7 @@ export default function DayNotes({ dayId, initialContent, autoFocus }: Props) {
             ? "saving…"
             : status === "error"
               ? "save failed"
-              : ""}
+              : written}
         </span>
       </div>
 

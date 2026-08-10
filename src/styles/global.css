@@ -369,6 +369,19 @@ textarea {
   transform: translateY(-1px);
 }
 
+/* Days with no writing yet sit back a touch, so the written ones read as
+ * "there's something here". Kept above the spotlight rules so a legend
+ * highlight/dim still wins, and hover restores full color. */
+.day-cell.no-writing {
+  opacity: 0.62;
+  filter: saturate(0.45);
+}
+
+.day-cell.no-writing:hover {
+  opacity: 1;
+  filter: none;
+}
+
 /* ---------- legend spotlight ---------- */
 
 /* Registered so the conic gradient's angle can animate smoothly. */
@@ -449,6 +462,14 @@ textarea {
 
 .day-cell-puzzle {
   font-size: 12px;
+}
+
+.day-cell-written {
+  margin-top: 3px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.03em;
+  color: var(--ink-faint);
 }
 
 .cal-empty {

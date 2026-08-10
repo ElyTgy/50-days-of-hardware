@@ -6,6 +6,9 @@ interface Props {
   day: ScheduledDay;
   /** spotlighted block id, or null for no spotlight */
   active: number | null;
+  /** when this day's writing was saved; null = none yet (cell grays out),
+   *  undefined = unknown (still loading, or no backend) — leave it alone */
+  writtenAt?: string | null;
   /** edit-mode drag & drop (wired by CalendarGrid) */
   draggable?: boolean;
   dragging?: boolean;
@@ -24,6 +27,7 @@ interface Props {
 export default function DayCell({
   day,
   active,
+  writtenAt,
   draggable,
   dragging,
   dropTarget,
@@ -37,6 +41,7 @@ export default function DayCell({
     active === null ? "" : day.blockId === active ? " is-highlight" : " is-dim";
   const dnd =
     (dragging ? " dragging" : "") + (dropTarget ? " drop-target" : "");
+  const unwritten = writtenAt === null ? " no-writing" : "";
 
   return (
     <div
@@ -57,7 +62,7 @@ export default function DayCell({
     >
       <Link
         to={`/day/${day.number}`}
-        className={`day-cell${mode}${dnd}`}
+        className={`day-cell${mode}${dnd}${unwritten}`}
         style={{ "--cell-accent": block.accent } as React.CSSProperties}
         // In edit mode the wrapper owns the drag; stop the anchor's native
         // link-drag from hijacking it.
@@ -77,6 +82,11 @@ export default function DayCell({
           <span className="day-cell-date">{formatDate(dateForDay(day.number))}</span>
         </div>
         <span className="day-cell-topic">{day.topic || "Untitled"}</span>
+        {writtenAt && (
+          <span className="day-cell-written">
+            written {formatDate(new Date(writtenAt))}
+          </span>
+        )}
       </Link>
     </div>
   );

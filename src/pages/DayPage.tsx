@@ -4,7 +4,7 @@ import DayNotes from "../components/DayNotes";
 import DaySection from "../components/DaySection";
 import { blockById, blocks, dateForDay, formatDateLong } from "../data/blocks";
 import { useAuth } from "../lib/auth";
-import { fetchDayNoteContent } from "../lib/dayNotes";
+import { fetchDayNote } from "../lib/dayNotes";
 import { useDays } from "../lib/days";
 import { CORE_SECTIONS, DAY_SECTIONS } from "../types";
 
@@ -88,14 +88,18 @@ export default function DayPage() {
   // an empty day doesn't reserve half the screen for nothing. `started`
   // lets the owner open a blank note on purpose.
   const [noteContent, setNoteContent] = useState<string | null>(null);
+  const [writtenAt, setWrittenAt] = useState<string | null>(null);
   const [started, setStarted] = useState(false);
   useEffect(() => {
     if (!day) return;
     let cancelled = false;
     setNoteContent(null);
+    setWrittenAt(null);
     setStarted(false);
-    fetchDayNoteContent(day.id).then((content) => {
-      if (!cancelled) setNoteContent(content);
+    fetchDayNote(day.id).then((note) => {
+      if (cancelled) return;
+      setNoteContent(note.content);
+      setWrittenAt(note.writtenAt);
     });
     return () => {
       cancelled = true;
@@ -321,6 +325,7 @@ export default function DayPage() {
             <DayNotes
               dayId={day.id}
               initialContent={noteContent ?? ""}
+              writtenAt={writtenAt}
               autoFocus={started}
             />
           ) : (

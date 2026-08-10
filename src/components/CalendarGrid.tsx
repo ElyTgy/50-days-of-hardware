@@ -1,6 +1,7 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { blockById, CHALLENGE_START } from "../data/blocks";
+import { fetchWrittenDays } from "../lib/dayNotes";
 import { useDays } from "../lib/days";
 import DayCell from "./DayCell";
 
@@ -32,6 +33,20 @@ export default function CalendarGrid({ active }: { active: number | null }) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null); // day id | "end" | "dock"
   const [dockOpen, setDockOpen] = useState(false);
+
+  // Which days have writing (day id → written-at timestamp). Null until the
+  // fetch lands — and stays null with no backend — so nothing gets grayed
+  // out on a wrong guess.
+  const [written, setWritten] = useState<Map<string, string> | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    fetchWrittenDays().then((map) => {
+      if (!cancelled) setWritten(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const trailing = (7 - ((LEADING_BLOCKED + scheduled.length) % 7)) % 7;
 
@@ -117,7 +132,13 @@ export default function CalendarGrid({ active }: { active: number | null }) {
         ))}
 
         {scheduled.map((d) => (
-          <DayCell key={d.id} day={d} active={active} {...dragProps(d.id)} />
+          <DayCell
+            key={d.id}
+            day={d}
+            active={active}
+            writtenAt={written === null ? undefined : (written.get(d.id) ?? null)}
+            {...dragProps(d.id)}
+          />
         ))}
 
         {/* Always mounted in edit mode: mounting it on dragstart shifts the
