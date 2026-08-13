@@ -584,31 +584,35 @@ textarea {
 
 .day-view-tabs {
   display: none;
-  gap: 8px;
+  width: 100%;
+  border: 1px solid var(--line);
   margin-bottom: 24px;
 }
 
 .day-view-tab {
+  flex: 1 1 50%;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--line);
+  border: none;
   background: transparent;
-  border-radius: 999px;
+  border-radius: 0;
   padding: 7px 16px;
   color: var(--ink-faint);
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s;
+}
+
+.day-view-tab + .day-view-tab {
+  border-left: 1px solid var(--line);
 }
 
 .day-view-tab:hover {
-  border-color: var(--ink);
   color: var(--ink);
 }
 
 .day-view-tab.active {
   background: var(--ink);
-  border-color: var(--ink);
   color: var(--paper);
 }
 
