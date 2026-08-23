@@ -946,13 +946,11 @@ textarea {
   color: var(--ink-soft);
 }
 
-/* ```embed fences in the editor: the live embed with a slim header; the
- * HTML itself only appears via the header's Source button. */
+/* ```embed fences in the editor: the live embed itself, with only a faint
+ * caption line above it (title, size, Source button) — no box or fill, so
+ * it reads the same as in the rendered note. */
 .cm-live-embed {
   margin: 8px 0;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  overflow: hidden;
 }
 
 .cm-live-embed-head {
@@ -960,13 +958,11 @@ textarea {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 5px 10px;
-  border-bottom: 1px solid var(--line);
+  padding: 0 2px 4px;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.04em;
-  color: var(--ink-soft);
-  background: var(--code-bg);
+  color: var(--ink-faint);
 }
 
 .cm-live-embed-label {
@@ -979,15 +975,15 @@ textarea {
   font: inherit;
   color: inherit;
   background: none;
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 1px 7px;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
 }
 
 .cm-live-embed-btn:hover {
   color: var(--ink);
-  border-color: var(--ink-faint);
 }
 
 .cm-live-embed iframe.md-embed {
