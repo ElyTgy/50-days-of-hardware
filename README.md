@@ -21,6 +21,18 @@ Light/dark theme toggle lives in the top-right; the choice is remembered.
 All fixed and note content renders markdown + LaTeX + raw HTML, so `days.ts` content
 can include equations, GIFs, and embedded animations/video.
 
+Interactive HTML (e.g. a Claude artifact) can be dropped straight into any note:
+paste the whole file inside a fenced block tagged `embed` and it runs in a
+sandboxed, auto-sized iframe that follows the site's light/dark toggle
+(`src/components/HtmlEmbed.tsx`). The claude.ai viewer preamble is stripped
+automatically, so copying the full artifact source is fine.
+
+    ```embed
+    <style>…</style>
+    <div>…</div>
+    <script>…</script>
+    ```
+
 ## Setup (~5 minutes)
 
 1. **Supabase**: create a project at [supabase.com](https://supabase.com), open the

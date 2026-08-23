@@ -1,10 +1,26 @@
-import type { ComponentProps, CSSProperties } from "react";
+import { isValidElement, type ComponentProps, type CSSProperties, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import { IMAGE_SIZE_RE, VIDEO_URL_RE } from "../lib/liveMarkdown";
+import HtmlEmbed from "./HtmlEmbed";
+
+/** A fenced block tagged `embed` holds a self-contained HTML document (a
+ *  Claude artifact, a small widget…). Instead of showing it as code, run it
+ *  in a sandboxed iframe. Any other fence renders as a normal <pre>. */
+function Pre({ children, ...rest }: ComponentProps<"pre">) {
+  const code = Array.isArray(children) ? children[0] : children;
+  if (isValidElement<{ className?: string; children?: ReactNode }>(code)) {
+    const lang = code.props.className ?? "";
+    if (/\blanguage-embed\b/.test(lang)) {
+      const src = code.props.children;
+      if (typeof src === "string") return <HtmlEmbed html={src} />;
+    }
+  }
+  return <pre {...rest}>{children}</pre>;
+}
 
 /** Honor the editor's `![alt|60](url)` size convention: a trailing "|60" in
  *  the alt text renders the media centered at 60% of the content width.
@@ -51,7 +67,7 @@ export default function Markdown({ children }: { children: string }) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeRaw, rehypeKatex]}
-        components={{ img: Img }}
+        components={{ img: Img, pre: Pre }}
       >
         {children}
       </ReactMarkdown>
