@@ -3,7 +3,14 @@ import { markdown } from "@codemirror/lang-markdown";
 import katex from "katex";
 import type { SyntaxNode } from "@lezer/common";
 import { GFM } from "@lezer/markdown";
-import { type EditorState, RangeSetBuilder, StateField } from "@codemirror/state";
+import { buildEmbedDoc, connectEmbedFrame, EMBED_SANDBOX, embedTitle } from "./embedFrame";
+import {
+  type EditorState,
+  RangeSetBuilder,
+  StateEffect,
+  StateField,
+  type Transaction,
+} from "@codemirror/state";
 import {
   Decoration,
   type DecorationSet,
@@ -438,6 +445,156 @@ const blockMathField = StateField.define<DecorationSet>({
   provide: (f) => EditorView.decorations.from(f),
 });
 
+/* ---------- ```embed fences ---------- */
+
+/** A fenced block tagged `embed` holds a whole HTML document (usually a
+ *  pasted Claude artifact — thousands of lines). Showing that as text makes
+ *  the note unusable, so the fence renders as the live embed itself, the
+ *  same sandboxed iframe the read-only view uses. Unlike images, the cursor
+ *  can't wander into it: the source only opens on the header's "Source"
+ *  button, and closes again once the cursor leaves the fence. */
+class EmbedWidget extends WidgetType {
+  private readonly html: string;
+
+  constructor(html: string) {
+    super();
+    this.html = html;
+  }
+  eq(other: EmbedWidget) {
+    return other.html === this.html;
+  }
+  toDOM(view: EditorView) {
+    const wrap = document.createElement("div");
+    wrap.className = "cm-live-embed";
+
+    const head = document.createElement("div");
+    head.className = "cm-live-embed-head";
+    const label = document.createElement("span");
+    label.className = "cm-live-embed-label";
+    const title = embedTitle(this.html);
+    const kb = Math.max(1, Math.round(this.html.length / 1024));
+    label.textContent = title ? `embed · ${title} · ${kb} KB` : `embed · ${kb} KB`;
+    head.appendChild(label);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "cm-live-embed-btn";
+    btn.textContent = "Source";
+    btn.title = "Show the HTML for this embed";
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const pos = view.posAtDOM(wrap);
+      // Land the cursor on the fence's opening line so the source shows.
+      view.dispatch({
+        effects: openEmbedSource.of(pos),
+        selection: { anchor: view.state.doc.lineAt(pos).to },
+      });
+      view.focus();
+    });
+    head.appendChild(btn);
+    wrap.appendChild(head);
+
+    const frame = document.createElement("iframe");
+    frame.className = "md-embed";
+    frame.setAttribute("sandbox", EMBED_SANDBOX);
+    frame.title = "Embedded interactive";
+    frame.style.height = "320px";
+    frame.srcdoc = buildEmbedDoc(this.html);
+    wrap.appendChild(frame);
+
+    const disconnect = connectEmbedFrame(frame, (px) => {
+      frame.style.height = `${px}px`;
+      view.requestMeasure();
+    });
+    (wrap as HTMLElement & { _cleanup?: () => void })._cleanup = disconnect;
+    return wrap;
+  }
+  destroy(dom: HTMLElement) {
+    (dom as HTMLElement & { _cleanup?: () => void })._cleanup?.();
+  }
+  ignoreEvent() {
+    // The iframe and header own their events; clicks here never move the
+    // editor's cursor into the hidden HTML.
+    return true;
+  }
+  get estimatedHeight() {
+    return 360;
+  }
+}
+
+/** Position (opening-fence start) of the one embed whose source is open. */
+const openEmbedSource = StateEffect.define<number>();
+const EMBED_FENCE_RE = /^(`{3,}|~{3,})\s*embed\s*$/;
+const CLOSE_FENCE_RE = /^\s*(`{3,}|~{3,})\s*$/;
+
+interface EmbedFence {
+  from: number;
+  to: number;
+  html: string;
+}
+
+function findEmbedFences(state: EditorState): EmbedFence[] {
+  const out: EmbedFence[] = [];
+  syntaxTree(state).iterate({
+    enter: (n) => {
+      if (n.name !== "FencedCode") return;
+      const startLine = state.doc.lineAt(n.from);
+      if (!EMBED_FENCE_RE.test(startLine.text)) return false;
+      const endLine = state.doc.lineAt(Math.min(n.to, state.doc.length));
+      let bodyTo = endLine.to;
+      if (endLine.number > startLine.number && CLOSE_FENCE_RE.test(endLine.text)) {
+        bodyTo = state.doc.line(endLine.number - 1).to;
+      }
+      const bodyFrom = Math.min(startLine.to + 1, bodyTo);
+      out.push({ from: startLine.from, to: endLine.to, html: state.sliceDoc(bodyFrom, bodyTo) });
+      return false;
+    },
+  });
+  return out;
+}
+
+const embedSourceField = StateField.define<number | null>({
+  create: () => null,
+  update(open, tr) {
+    for (const e of tr.effects) if (e.is(openEmbedSource)) return e.value;
+    if (open === null) return null;
+    const mapped = tr.changes.mapPos(open);
+    // Close again once the cursor has left that fence.
+    const fence = findEmbedFences(tr.state).find((f) => f.from === mapped);
+    if (!fence || !selectionTouches(tr.state, fence.from, fence.to)) return null;
+    return mapped;
+  },
+});
+
+function buildEmbeds(state: EditorState): DecorationSet {
+  const builder = new RangeSetBuilder<Decoration>();
+  const open = state.field(embedSourceField);
+  for (const f of findEmbedFences(state)) {
+    if (f.from === open) continue;
+    builder.add(
+      f.from,
+      f.to,
+      Decoration.replace({ widget: new EmbedWidget(f.html), block: true }),
+    );
+  }
+  return builder.finish();
+}
+
+const embedField = StateField.define<DecorationSet>({
+  create: buildEmbeds,
+  update(deco, tr: Transaction) {
+    return tr.docChanged || tr.effects.some((e) => e.is(openEmbedSource)) ||
+      tr.startState.field(embedSourceField) !== tr.state.field(embedSourceField)
+      ? buildEmbeds(tr.state)
+      : deco;
+  },
+  provide: (f) => [
+    EditorView.decorations.from(f),
+    // Atomic: arrow keys and clicks step over the embed instead of into
+    // its (hidden) HTML.
+    EditorView.atomicRanges.of((view) => view.state.field(f)),
+  ],
+});
+
 const livePreviewPlugin = ViewPlugin.fromClass(
   class {
     decorations: DecorationSet;
@@ -461,5 +618,7 @@ export function liveMarkdown() {
     EditorView.lineWrapping,
     livePreviewPlugin,
     blockMathField,
+    embedSourceField,
+    embedField,
   ];
 }

@@ -946,6 +946,62 @@ textarea {
   color: var(--ink-soft);
 }
 
+/* ```embed fences in the editor: the live embed with a slim header; the
+ * HTML itself only appears via the header's Source button. */
+.cm-live-embed {
+  margin: 8px 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.cm-live-embed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  background: var(--code-bg);
+}
+
+.cm-live-embed-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cm-live-embed-btn {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 7px;
+  cursor: pointer;
+}
+
+.cm-live-embed-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink-faint);
+}
+
+.cm-live-embed iframe.md-embed {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] .cm-live-embed iframe.md-embed {
+  color-scheme: dark;
+}
+
 .cm-live-code-line {
   background: var(--code-bg);
   font-family: var(--mono);
