@@ -5,6 +5,7 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import { IMAGE_SIZE_RE, VIDEO_URL_RE } from "../lib/liveMarkdown";
+import { alignSource, remarkHardBreaks } from "../lib/noteMarkdown";
 import HtmlEmbed from "./HtmlEmbed";
 
 /** A fenced block tagged `embed` holds a self-contained HTML document (a
@@ -60,16 +61,19 @@ function Img({ alt = "", style, src, ...rest }: ComponentProps<"img">) {
  * Renders markdown with GitHub extensions, LaTeX math ($…$ and $$…$$ via
  * KaTeX), and raw HTML — so content can include images, GIFs, embedded
  * animations/video, tables, and equations.
+ *
+ * Line breaks and indentation survive (see noteMarkdown.ts): what everyone
+ * else reads has to match what the editor showed while it was written.
  */
 export default function Markdown({ children }: { children: string }) {
   return (
     <div className="md">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkMath]}
+        remarkPlugins={[remarkGfm, remarkMath, remarkHardBreaks]}
         rehypePlugins={[rehypeRaw, rehypeKatex]}
         components={{ img: Img, pre: Pre }}
       >
-        {children}
+        {alignSource(children)}
       </ReactMarkdown>
     </div>
   );

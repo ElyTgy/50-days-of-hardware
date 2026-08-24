@@ -1077,6 +1077,18 @@ textarea {
   border: 1px solid var(--line);
 }
 
+/* Every newline in a note is a line break (see noteMarkdown.ts), but media
+ * and embeds are blocks that break the line themselves — the <br> beside one
+ * would leave a stray empty line the editor never shows. */
+.md img + br,
+.md video + br,
+.md iframe + br,
+.md br:has(+ img),
+.md br:has(+ video),
+.md br:has(+ iframe) {
+  display: none;
+}
+
 /* `![alt|60](url)` sized media: honor the chosen % on wide screens, but go
  * full width once the day view collapses to the read/write toggle. */
 .md img[data-sized],
